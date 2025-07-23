@@ -21,11 +21,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class SwerveModule {
   private static final double moduleMaxAngularVelocity = Math.PI;
   private static final double moduleMaxAngularAcceleration = 4 * Math.PI; // radians per second squared
-  
-  private final SparkMax driveMotor; 
+
+  private final SparkMax driveMotor;
   private final RelativeEncoder driveEncoder;
   private final SparkMax rotationMotor;
-  private final CANcoder rotationEncoder;  
+  private final CANcoder rotationEncoder;
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final PIDController drivePIDController = new PIDController(0, 0, 0);
@@ -34,18 +34,19 @@ public class SwerveModule {
   private SwerveModuleState desiredState;
   // Gains are for example purposes only - must be determined for your own robot!
   private double rotateP = 0.8;
-  private final ProfiledPIDController rotationPIDController =
-      new ProfiledPIDController(rotateP,0,0,
-          new TrapezoidProfile.Constraints(
-              moduleMaxAngularVelocity, moduleMaxAngularAcceleration));
-              
+  private final ProfiledPIDController rotationPIDController = new ProfiledPIDController(rotateP, 0, 0,
+      new TrapezoidProfile.Constraints(
+          moduleMaxAngularVelocity, moduleMaxAngularAcceleration));
+
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
+
   /**
-   * Constructs a SwerveModule with a drive motor, rotation motor, drive encoder and rotation encoder.
+   * Constructs a SwerveModule with a drive motor, rotation motor, drive encoder
+   * and rotation encoder.
    *
-   * @param driveMotorChannel CAN id for the drive motor.
-   * @param rotationMotorChannel CAN id for the rotation motor.
+   * @param driveMotorChannel      CAN id for the drive motor.
+   * @param rotationMotorChannel   CAN id for the rotation motor.
    * @param rotationEncoderChannel CAN id for the rotation encoder.
    */
   public SwerveModule(
@@ -57,18 +58,18 @@ public class SwerveModule {
     rotationEncoder = new CANcoder(rotationEncoderChannel);
     driveEncoder = driveMotor.getEncoder();
 
-    
-    // Limit the PID Controller's input range between -pi and pi and set the input to be continuous.
+    // Limit the PID Controller's input range between -pi and pi and set the input
+    // to be continuous.
     rotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Reset the wheels, as we manually align them.
     rotationEncoder.setPosition(0);
     // rotationEncoder.setPosition(rotationEncoder.getAbsolutePosition().getValueAsDouble());
-    
+
   }
 
   public double getDriveSpeedMetersPerSecond() {
-    double RawRPM =driveMotor.getEncoder().getVelocity();
+    double RawRPM = driveMotor.getEncoder().getVelocity();
     RawRPM = (RawRPM / 6.12);
     double RawRPS = RawRPM / 60;
     double Conversion = (2 * Math.PI * 0.0508);
@@ -78,13 +79,13 @@ public class SwerveModule {
 
   /* Returns the distance traveled by the drive encoder in meters */
   public double getDriveDistanceMeters() {
-    return ((driveEncoder.getPosition()/6.12) * (2*Math.PI*0.0508)); 
+    return ((driveEncoder.getPosition() / 6.12) * (2 * Math.PI * 0.0508));
   }
 
   /* Returns the angle traveled by the rotation encoder in radians */
   public double getRotationEncoderPosition() {
     return (rotationEncoder.getPosition().getValueAsDouble() * (2 * Math.PI)); // Returns the angle in radians
-  } 
+  }
 
   /**
    * Returns the current state of the module.
@@ -130,24 +131,25 @@ public class SwerveModule {
     // Optimize the reference state to avoid spinning further than 90 degrees
     desiredStateInput.optimize(encoderRotation);
 
-    // Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
-    // direction of travel that can occur when modules change directions. This results in smoother
+    // Scale speed by cosine of angle error. This scales down movement perpendicular
+    // to the desired
+    // direction of travel that can occur when modules change directions. This
+    // results in smoother
     // driving.
     desiredStateInput.cosineScale(encoderRotation);
 
     // Calculate the drive output from the drive PID controller.
-    final double driveOutput =
-        drivePIDController.calculate(driveEncoder.getVelocity(), desiredStateInput.speedMetersPerSecond);
+    final double driveOutput = drivePIDController.calculate(driveEncoder.getVelocity(),
+        desiredStateInput.speedMetersPerSecond);
     final double calculatedDriveFeedForward = driveFeedforward.calculate(desiredStateInput.speedMetersPerSecond);
 
     // Calculate the rotation motor output from the rotation PID controller.
-    final double rotateOutput =
-        rotationPIDController.calculate(getRotationEncoderPosition(), desiredStateInput.angle.getRadians());
+    final double rotateOutput = rotationPIDController.calculate(getRotationEncoderPosition(),
+        desiredStateInput.angle.getRadians());
 
     driveMotor.setVoltage(driveOutput + calculatedDriveFeedForward);
     rotationMotor.set(rotateOutput);
   }
-
 
   public void setPID() {
     double P = SmartDashboard.getNumber("Swerve P", rotateP);

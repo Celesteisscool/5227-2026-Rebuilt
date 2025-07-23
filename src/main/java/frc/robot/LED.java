@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.util.Color;
 
 public class LED {
     public AddressableLED leds;
-    public AddressableLEDBuffer data = new AddressableLEDBuffer(24*2);
+    public AddressableLEDBuffer data = new AddressableLEDBuffer(24 * 2);
 
     private final Distance LED_SPACING = Meters.of(1.0 / 60);
 
@@ -21,19 +21,19 @@ public class LED {
     private final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(InchesPerSecond.of(12), LED_SPACING);
 
     private final LEDPattern purpleGold = LEDPattern.gradient(GradientType.kContinuous, new Color[] {
-        new Color(75,0,130), // Purple
-        new Color(255, 223, 0) } ); // Gold
-    private final LEDPattern purpleGoldScrolling = purpleGold.scrollAtAbsoluteSpeed(InchesPerSecond.of(12), LED_SPACING);
+            new Color(75, 0, 130), // Purple
+            new Color(255, 223, 0) }); // Gold
+    private final LEDPattern purpleGoldScrolling = purpleGold.scrollAtAbsoluteSpeed(InchesPerSecond.of(12),
+            LED_SPACING);
 
-
-    private final LEDPattern patternRed = LEDPattern.solid(new Color(100,0,0));
-    private final LEDPattern patternGreen = LEDPattern.solid(new Color(0,100,0));
-    private final LEDPattern patternBlue = LEDPattern.solid(new Color(0,0,100));
+    private final LEDPattern patternRed = LEDPattern.solid(new Color(100, 0, 0));
+    private final LEDPattern patternGreen = LEDPattern.solid(new Color(0, 100, 0));
+    private final LEDPattern patternBlue = LEDPattern.solid(new Color(0, 0, 100));
     private final LEDPattern patternOff = LEDPattern.kOff;
 
     public double AlignSide = 0; // true is left false is right
-    public double leftAlign = -2.25;    
-    
+    public double leftAlign = -2.25;
+
     public LED() {
         leds = new AddressableLED(0);
         leds.setLength(data.getLength());
@@ -66,5 +66,5 @@ public class LED {
 
     public void updateLED() {
         leds.setData(data);
-    }    
+    }
 }

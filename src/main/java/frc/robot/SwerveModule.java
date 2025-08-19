@@ -20,12 +20,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class SwerveModule {
   private static final double moduleMaxAngularVelocity = Math.PI;
-  private static final double moduleMaxAngularAcceleration = 4 * Math.PI; // radians per second squared
+  private static final double moduleMaxAngularAcceleration = 9 * Math.PI; // radians per second squared
 
   private final SparkMax driveMotor;
   private final RelativeEncoder driveEncoder;
   private final SparkMax rotationMotor;
   private final CANcoder rotationEncoder;
+  private double rotationOffset;
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final PIDController drivePIDController = new PIDController(0, 0, 0);
@@ -52,18 +53,24 @@ public class SwerveModule {
   public SwerveModule(
       int driveMotorChannel,
       int rotationMotorChannel,
-      int rotationEncoderChannel) {
+      int rotationEncoderChannel,
+      double rotationEncoderOffset) {
     driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
     rotationMotor = new SparkMax(rotationMotorChannel, MotorType.kBrushless);
     rotationEncoder = new CANcoder(rotationEncoderChannel);
     driveEncoder = driveMotor.getEncoder();
+    
+    rotationOffset = rotationEncoderOffset;
+
+    // Fix misalignments
+    rotationPIDController.setTolerance(0.1);
 
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     rotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Reset the wheels, as we manually align them.
-    rotationEncoder.setPosition(0);
+    // rotationEncoder.setPosition(0);
     // rotationEncoder.setPosition(rotationEncoder.getAbsolutePosition().getValueAsDouble());
 
   }
@@ -84,7 +91,8 @@ public class SwerveModule {
 
   /* Returns the angle traveled by the rotation encoder in radians */
   public double getRotationEncoderPosition() {
-    return (rotationEncoder.getPosition().getValueAsDouble() * (2 * Math.PI)); // Returns the angle in radians
+    return ((rotationEncoder.getAbsolutePosition().getValueAsDouble() + rotationOffset)
+        * (2 * Math.PI)); // Returns the angle in radians
   }
 
   /**

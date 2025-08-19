@@ -3,7 +3,8 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Controls.ControlInterface;
+import frc.robot.Controls.RealControls;
 
 public class Constants {
     // Drivetrain Constants
@@ -14,6 +15,12 @@ public class Constants {
     public static final int[] frontRightIDs = { 3, 4, 10 };
     public static final int[] backLeftIDs = { 7, 8, 12 };
     public static final int[] backRightIDs = { 1, 2, 9 };
+
+    public static final double frontLeftOffset = -0.025634765625;
+    public static final double frontRightOffset = 0.178466796875;
+    public static final double backLeftOffset = -0.020751953125;
+    public static final double backRightOffset = -0.437255859375;
+
     public static final int gyroID = 32;
 
     public static final SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(3.5);
@@ -30,8 +37,7 @@ public class Constants {
     public static Drivetrain drivetrainClass = new Drivetrain();
     public static final LED ledClass = new LED();
 
-    public static XboxController driverController = new XboxController(0);
-    public static XboxController secondController = new XboxController(1);
+    public static ControlInterface Controls = new RealControls();
 
     // Auto Constants
     public final static PIDController xController = new PIDController(10.0, 0.0, 0.0);

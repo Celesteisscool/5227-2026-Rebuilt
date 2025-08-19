@@ -31,14 +31,10 @@ public class Drivetrain {
   private final Translation2d backLeftLocation = Constants.backLeftLocation;
   private final Translation2d backRightLocation = Constants.backRightLocation;
 
-  private final SwerveModule frontLeft = new SwerveModule(Constants.frontLeftIDs[0], Constants.frontLeftIDs[1],
-      Constants.frontLeftIDs[2]);
-  private final SwerveModule frontRight = new SwerveModule(Constants.frontRightIDs[0], Constants.frontRightIDs[1],
-      Constants.frontRightIDs[2]);
-  private final SwerveModule backLeft = new SwerveModule(Constants.backLeftIDs[0], Constants.backLeftIDs[1],
-      Constants.backLeftIDs[2]);
-  private final SwerveModule backRight = new SwerveModule(Constants.backRightIDs[0], Constants.backRightIDs[1],
-      Constants.backRightIDs[2]);
+  private final SwerveModule frontLeft = new SwerveModule(Constants.frontLeftIDs[0], Constants.frontLeftIDs[1], Constants.frontLeftIDs[2], Constants.frontLeftOffset);
+  private final SwerveModule frontRight = new SwerveModule(Constants.frontRightIDs[0], Constants.frontRightIDs[1], Constants.frontRightIDs[2], Constants.frontRightOffset);
+  private final SwerveModule backLeft = new SwerveModule(Constants.backLeftIDs[0], Constants.backLeftIDs[1], Constants.backLeftIDs[2], Constants.backLeftOffset);
+  private final SwerveModule backRight = new SwerveModule(Constants.backRightIDs[0], Constants.backRightIDs[1], Constants.backRightIDs[2],  Constants.backRightOffset);
 
   public static final Pigeon2 pigeon2 = new Pigeon2(Constants.gyroID);
 

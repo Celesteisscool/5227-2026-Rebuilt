@@ -1,13 +1,7 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
-
 public class Teleop {
-	private static int aligningSide = 0;
-	public static double joystickAngle = 0.0;
 	static boolean fieldRelative = true;
-
-	private static XboxController driverController = Constants.driverController;
 
 	public static double deadzones(double input) {
 		if (Math.abs(input) < 0.05) {
@@ -22,19 +16,19 @@ public class Teleop {
 		double translateSpeedLimiter = 0.95;
 		double rotateSpeedLimiter = 0.95;
 
-		if (driverController.getRightTriggerAxis() > 0.5) {
+		if (Constants.Controls.getSlowMode()) {
 			translateSpeedLimiter *= 0.25;
 			rotateSpeedLimiter *= 0.1;
 		}
 
-		double xSpeed = (deadzones(driverController.getLeftY()) * Constants.maxSwerveSpeed * translateSpeedLimiter);
-		double ySpeed = (deadzones(driverController.getLeftX()) * Constants.maxSwerveSpeed * translateSpeedLimiter);
-		double rotSpeed = (deadzones(driverController.getRightX()) * Constants.maxSwerveAngularSpeed
+		double xSpeed = (deadzones(Constants.Controls.getDriveY()) * Constants.maxSwerveSpeed * translateSpeedLimiter);
+		double ySpeed = (deadzones(Constants.Controls.getDriveX()) * Constants.maxSwerveSpeed * translateSpeedLimiter);
+		double rotSpeed = (deadzones(Constants.Controls.getDriveRot()) * Constants.maxSwerveAngularSpeed
 				* rotateSpeedLimiter);
-		int POVangle = driverController.getPOV();
+		double RobotRelativeAngle = Constants.Controls.getRobotRelativeDegrees();
 
-		if (POVangle != -1) { // Drives with the DPad instead of the joystick for perfect 45° angles
-			var POVRadians = Math.toRadians(POVangle);
+		if (RobotRelativeAngle != -1) { // Drives with the DPad instead of the joystick for perfect 45° angles
+			var POVRadians = Math.toRadians(RobotRelativeAngle);
 			xSpeed = Math.cos(POVRadians) * -0.25 * translateSpeedLimiter;
 			ySpeed = Math.sin(POVRadians) * 0.25 * translateSpeedLimiter;
 			fieldRelative = false; // Forces it to be robot relative
@@ -44,24 +38,9 @@ public class Teleop {
 			}
 		}
 
-		joystickAngle = Math.toDegrees(Math.atan2(driverController.getLeftX(), driverController.getLeftY()));
-
-		double xOutput;
-		double yOutput;
-		double rotOutput;
-		boolean noSmooth = (driverController.getLeftTriggerAxis() > 0.5 || aligningSide != 0);
-		if (noSmooth) { // FAST DRIVE :)
-			Constants.slewRateLimiterX.calculate(xSpeed); // Calculates to update even when pressed
-			Constants.slewRateLimiterY.calculate(ySpeed);
-			Constants.slewRateLimiterRot.calculate(rotSpeed);
-			xOutput = xSpeed;
-			yOutput = ySpeed;
-			rotOutput = rotSpeed;
-		} else {
-			xOutput = Constants.slewRateLimiterX.calculate(xSpeed);
-			yOutput = Constants.slewRateLimiterY.calculate(ySpeed);
-			rotOutput = Constants.slewRateLimiterRot.calculate(rotSpeed);
-		}
+		double xOutput = Constants.slewRateLimiterX.calculate(xSpeed);
+		double yOutput = Constants.slewRateLimiterY.calculate(ySpeed);
+		double rotOutput = Constants.slewRateLimiterRot.calculate(rotSpeed);
 
 		Drivetrain.drive(
 				xOutput,

@@ -29,6 +29,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    Constants.drivetrainClass.updateDashboard();
   }
 
   @Override
@@ -78,7 +79,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    Constants.ledClass.setLEDPurpleGold();
+    Constants.ledClass.setLEDYELLOW();
     Constants.ledClass.updateLED();
   }
 }

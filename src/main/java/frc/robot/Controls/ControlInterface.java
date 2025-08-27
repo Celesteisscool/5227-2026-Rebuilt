@@ -6,5 +6,7 @@ public interface ControlInterface {
     double getDriveRot();
     boolean getSlowMode();
     double getRobotRelativeDegrees();
+    boolean getShooterButton();
+    boolean getIntakeButton();
 }
 

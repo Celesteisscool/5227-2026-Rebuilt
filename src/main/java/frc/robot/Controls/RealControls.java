@@ -30,4 +30,14 @@ public class RealControls implements ControlInterface {
     public double getRobotRelativeDegrees() {
         return driverController.getPOV();
     }
+
+    @Override
+    public boolean getShooterButton() {
+        return driverController.getAButton();
+    }
+
+    @Override
+    public boolean getIntakeButton() {
+        return driverController.getBButton();
+    }
 }

@@ -36,6 +36,7 @@ public class Constants {
     // Global Constants
     public static Drivetrain drivetrainClass = new Drivetrain();
     public static final LED ledClass = new LED();
+    public static final Shooter shooterClass = new Shooter();
 
     public static ControlInterface Controls = new RealControls();
 

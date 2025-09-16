@@ -51,7 +51,7 @@ public class Teleop {
 
 	public void teleopPeriodic() {
 		driveFunction();
-		// Constants.shooterClass.normalShooter();
+		// Constants.shooterClass.shooterWithHoodServo();
 		Constants.ledClass.updateLED();
 	}
 }

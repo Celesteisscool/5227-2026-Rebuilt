@@ -91,7 +91,7 @@ public class SwerveModule {
 
   /* Returns the angle traveled by the rotation encoder in radians */
   public double getRotationEncoderPosition() {
-    return ((rotationEncoder.getAbsolutePosition().getValueAsDouble() + rotationOffset)
+    return ((rotationEncoder.getAbsolutePosition().getValueAsDouble())
         * (2 * Math.PI)); // Returns the angle in radians
   }
 

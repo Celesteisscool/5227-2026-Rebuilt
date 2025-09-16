@@ -2,9 +2,10 @@ package frc.robot.Controls;
 
 import edu.wpi.first.wpilibj.XboxController;
 
-public class RealControls implements ControlInterface {
+public class TwoPeopleControls implements ControlInterface {
 
     XboxController driverController = new XboxController(0);    
+    XboxController secondaryController = new XboxController(1);    
    
     @Override
     public double getDriveX() {
@@ -33,16 +34,16 @@ public class RealControls implements ControlInterface {
 
     @Override
     public boolean getShooterButton() {
-        return driverController.getAButton();
+        return secondaryController.getAButton();
     }
 
     @Override
     public boolean getIntakeButton() {
-        return driverController.getBButton();
+        return secondaryController.getBButton();
     }
 
     @Override
     public double getAngleAdjust() {
-        return driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis();
+        return secondaryController.getLeftTriggerAxis() - secondaryController.getRightTriggerAxis();
     }
 }

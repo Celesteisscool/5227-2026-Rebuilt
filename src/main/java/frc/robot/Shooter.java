@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.Servo;
+
 import com.revrobotics.spark.SparkMax;
 
 public class Shooter {
@@ -9,6 +12,10 @@ public class Shooter {
 
     SparkMax intakeMotor = new SparkMax(23, MotorType.kBrushless);
 
+    Servo hoodServo = new Servo(3);
+
+    double desiredAngle = 0;
+    
 
     public void normalShooter() {
         if (Constants.Controls.getShooterButton()) {
@@ -42,5 +49,17 @@ public class Shooter {
         } else {
             intakeMotor.set(0);
         }
+    }
+
+
+    public void shooterWithHoodServo() {
+        if (Dashboard.getEntry("Hood Angle", Double.class) == null) {
+            Dashboard.addEntry("Hood Angle", Double.class);
+        } 
+
+        desiredAngle += Constants.Controls.getAngleAdjust(); //Should be -1 to 1, this might need a mult
+        desiredAngle = Math.min(90, Math.max(0, desiredAngle)); // Clamps from 0 to 90, not sure what will get reported
+        hoodServo.setAngle(desiredAngle); // Updates the setpoint
+        Dashboard.updateEntry("Hood Angle", hoodServo.getAngle());
     }
 }

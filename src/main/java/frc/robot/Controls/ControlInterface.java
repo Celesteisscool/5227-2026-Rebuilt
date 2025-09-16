@@ -8,5 +8,6 @@ public interface ControlInterface {
     double getRobotRelativeDegrees();
     boolean getShooterButton();
     boolean getIntakeButton();
+    double getAngleAdjust();
 }
 

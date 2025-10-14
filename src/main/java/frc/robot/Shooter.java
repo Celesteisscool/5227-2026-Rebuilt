@@ -53,9 +53,9 @@ public class Shooter {
 
 
     public void shooterWithHoodServo() {
-        if (Dashboard.getEntry("Hood Angle", Double.class) == null) {
-            Dashboard.addEntry("Hood Angle", Double.class);
-        } 
+        // if (Dashboard.getEntry("Hood Angle", double.class) == null) {
+            // Dashboard.addEntry("Hood Angle", 0.0);
+        // } 
 
         desiredAngle += Constants.Controls.getAngleAdjust(); //Should be -1 to 1, this might need a mult
         desiredAngle = Math.min(90, Math.max(0, desiredAngle)); // Clamps from 0 to 90, not sure what will get reported

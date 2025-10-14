@@ -12,6 +12,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
+    
   }
 
   @Override
@@ -20,7 +21,15 @@ public class Robot extends TimedRobot {
   }
 
   @Override
+  public void testInit() {
+    Dashboard.addEntry("test", "Hello World!");
+    Dashboard.updateEntry("test", "chat is this real?");
+    System.out.println(Dashboard.getEntry("test"));
+  }
+
+  @Override
   public void autonomousInit() {
+    
   }
 
   @Override
@@ -30,6 +39,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    
   }
 
   @Override

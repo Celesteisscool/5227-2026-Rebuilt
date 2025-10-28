@@ -70,7 +70,7 @@ public class SwerveModule {
     rotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
     // Reset the wheels, as we manually align them.
-    // rotationEncoder.setPosition(0);
+    rotationEncoder.setPosition(0);
     // rotationEncoder.setPosition(rotationEncoder.getAbsolutePosition().getValueAsDouble());
 
   }

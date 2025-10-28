@@ -4,7 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Controls.ControlInterface;
-import frc.robot.Controls.RealControls;
+import frc.robot.Controls.RebindDemo;
 
 public class Constants {
     // Drivetrain Constants
@@ -39,7 +39,7 @@ public class Constants {
     public static final Shooter shooterClass = new Shooter();
     public static final Dashboard dashboardClass = new Dashboard();
 
-    public static ControlInterface Controls = new RealControls();
+    public static ControlInterface Controls = new RebindDemo();
 
     // Auto Constants
     public final static PIDController xController = new PIDController(10.0, 0.0, 0.0);

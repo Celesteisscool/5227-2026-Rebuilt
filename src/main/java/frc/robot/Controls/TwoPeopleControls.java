@@ -28,7 +28,7 @@ public class TwoPeopleControls implements ControlInterface {
     }
 
     @Override
-    public double getRobotRelativeDegrees() {
+    public int getRobotRelativeDegrees() {
         return driverController.getPOV();
     }
 

@@ -2,7 +2,7 @@ package frc.robot.Controls;
 
 import edu.wpi.first.wpilibj.XboxController;
 
-public class RealControls implements ControlInterface {
+public class OnePersonControls implements ControlInterface {
 
     XboxController driverController = new XboxController(0);    
    
@@ -18,7 +18,7 @@ public class RealControls implements ControlInterface {
 
     @Override
     public double getDriveRot() {
-        return driverController.getLeftX();
+        return driverController.getRightX();
     }   
 
     @Override
@@ -27,7 +27,7 @@ public class RealControls implements ControlInterface {
     }
 
     @Override
-    public double getRobotRelativeDegrees() {
+    public int getRobotRelativeDegrees() {
         return driverController.getPOV();
     }
 

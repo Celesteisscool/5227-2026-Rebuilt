@@ -10,4 +10,3 @@ public interface ControlInterface {
     boolean getIntakeButton();
     double getAngleAdjust();
 }
-

@@ -50,13 +50,13 @@ public class RebindDemo implements ControlInterface {
     public double getDriveY() {
         if (driveMode) {return ccSticks(driverController.getLeftY());}
         else {return 0;}
-    }   
+    }
 
     @Override
     public double getDriveRot() {
         if (driveMode) {return ccSticks(driverController.getRightX());}
         else {return 0;}
-    }   
+    }
 
     @Override
     public boolean getSlowMode() {

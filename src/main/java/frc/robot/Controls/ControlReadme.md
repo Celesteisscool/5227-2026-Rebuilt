@@ -30,8 +30,34 @@ Your "Controls" should be comprised of overrides, overriding the template functi
 ```
 This is where you could input stuff like joystick buttons. The "Controls" file should also include any functions needed to properly use an input! (For example, clamping a input to be in a range)
 
+### Optional:
+A perk of using these control interfaces is that you can have *dynamic* controls! This allows you to swap what controll interface you are using in real time
+
+For example: "Shooting mode" and "intake mode". you can have 2 "Interface" files, and only override what you need to change. Then, in a third file (Which will be the one you reference in robot code), you can dynamicly update which control is being used!
+
+Set up your control sets like this:
+```java
+public static ControlInterface GetDynamicControl() { 
+    if (Condition) {
+        return new ControlSetA();
+    } else {
+        return new ControlSetB();
+    }
+}
+```
+And reference them like this:
+```java
+@Override
+public boolean getSuperFunButton() {
+    return GetDynamicControl().getSuperFunButton();
+}
+```
+
+
 ## Examples
 - [Interface Header](src/main/java/frc/robot/Controls/ControlInterface.java)
 - [Interface Controls](src/main/java/frc/robot/Controls/RebindDemo.java)
+
+- [Control Swapper](src/main/java/frc/robot/Controls/ControlSwapepr.java)
 
 These are some functioning Control Headers / Controls for reference. Every robot is not the same, so be sure to modify these files and use them as reference for later. 

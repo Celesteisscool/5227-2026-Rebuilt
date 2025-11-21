@@ -7,6 +7,8 @@ import frc.robot.Controls.ControlInterface;
 import frc.robot.Controls.RebindDemo;
 import frc.robot.Controls.simControls;
 
+import frc.robot.Robot;
+
 public class Constants {
     // Drivetrain Constants
     public static final double maxSwerveSpeed = 1.5; // 1.5 meters per second
@@ -40,7 +42,16 @@ public class Constants {
     public static final Shooter shooterClass = new Shooter();
     public static final Dashboard dashboardClass = new Dashboard();
 
-    public static ControlInterface Controls = new simControls();
+    public static ControlInterface Controls;
+
+    static {
+        if (frc.robot.Robot.isReal()) {
+            Controls = new RebindDemo();
+        } else {
+            Controls = new simControls();
+        }
+    }
+    
 
     // Auto Constants
     public final static PIDController xController = new PIDController(10.0, 0.0, 0.0);

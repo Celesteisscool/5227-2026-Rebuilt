@@ -22,10 +22,10 @@ public class SwerveModule {
   private static final double moduleMaxAngularVelocity = Math.PI;
   private static final double moduleMaxAngularAcceleration = 9 * Math.PI; // radians per second squared
 
-  private final SparkMax driveMotor;
+  private final SparkMax        driveMotor;
   private final RelativeEncoder driveEncoder;
-  private final SparkMax rotationMotor;
-  private final CANcoder rotationEncoder;
+  private final SparkMax        rotationMotor;
+  private final CANcoder        rotationEncoder;
   private double rotationOffset;
 
   // Gains are for example purposes only - must be determined for your own robot!
@@ -35,9 +35,10 @@ public class SwerveModule {
   private SwerveModuleState desiredState;
   // Gains are for example purposes only - must be determined for your own robot!
   private double rotateP = 0.8;
-  private final ProfiledPIDController rotationPIDController = new ProfiledPIDController(rotateP, 0, 0,
-      new TrapezoidProfile.Constraints(
-          moduleMaxAngularVelocity, moduleMaxAngularAcceleration));
+  private final ProfiledPIDController rotationPIDController 
+    = new ProfiledPIDController(
+        rotateP, 0, 0,
+        new TrapezoidProfile.Constraints(moduleMaxAngularVelocity, moduleMaxAngularAcceleration));
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
@@ -51,12 +52,12 @@ public class SwerveModule {
    * @param rotationEncoderChannel CAN id for the rotation encoder.
    */
   public SwerveModule(
-      int driveMotorChannel,
-      int rotationMotorChannel,
-      int rotationEncoderChannel,
+      int    driveMotorChannel,
+      int    rotationMotorChannel,
+      int    rotationEncoderChannel,
       double rotationEncoderOffset) {
-    driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
-    rotationMotor = new SparkMax(rotationMotorChannel, MotorType.kBrushless);
+    driveMotor      = new SparkMax(driveMotorChannel,    MotorType.kBrushless);
+    rotationMotor   = new SparkMax(rotationMotorChannel, MotorType.kBrushless);
     rotationEncoder = new CANcoder(rotationEncoderChannel);
     driveEncoder = driveMotor.getEncoder();
     
@@ -75,13 +76,9 @@ public class SwerveModule {
 
   }
 
+  /* Returns the speed of the drive motor in meters per second */
   public double getDriveSpeedMetersPerSecond() {
-    double RawRPM = driveMotor.getEncoder().getVelocity();
-    RawRPM = (RawRPM / 6.12);
-    double RawRPS = RawRPM / 60;
-    double Conversion = (2 * Math.PI * 0.0508);
-    double MPS = RawRPS * Conversion;
-    return MPS;
+    return ((driveMotor.getEncoder().getVelocity() / 6.12) / 60) * (2 * Math.PI * 0.0508);
   }
 
   /* Returns the distance traveled by the drive encoder in meters */
@@ -159,6 +156,7 @@ public class SwerveModule {
     rotationMotor.set(rotateOutput);
   }
 
+  /* Sets the PID values from SmartDashboard */
   public void setPID() {
     double P = SmartDashboard.getNumber("Swerve P", rotateP);
     double I = SmartDashboard.getNumber("Swerve I", 0);

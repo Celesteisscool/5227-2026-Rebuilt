@@ -1,14 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 public class Teleop {
 	static boolean fieldRelative = true;
 
 	public static double deadzones(double input) {
-		if (Math.abs(input) < 0.05) {
-			return 0;
-		} else {
-			return input;
-		}
+		return Math.abs(input) < 0.05 ? 0 : input;
 	}
 
 	public static void driveFunction() {
@@ -18,19 +16,19 @@ public class Teleop {
 
 		if (Constants.Controls.getSlowMode()) {
 			translateSpeedLimiter *= 0.25;
-			rotateSpeedLimiter *= 0.1;
+			rotateSpeedLimiter    *= 0.1;
 		}
 
-		double xSpeed = (deadzones(Constants.Controls.getDriveY()) * Constants.maxSwerveSpeed * translateSpeedLimiter);
-		double ySpeed = (deadzones(Constants.Controls.getDriveX()) * Constants.maxSwerveSpeed * translateSpeedLimiter);
-		double rotSpeed = (deadzones(Constants.Controls.getDriveRot()) * Constants.maxSwerveAngularSpeed
-				* rotateSpeedLimiter);
+		double xSpeed   = deadzones(Constants.Controls.getDriveY())   * Constants.maxSwerveSpeed * translateSpeedLimiter;
+		double ySpeed   = deadzones(Constants.Controls.getDriveX())   * Constants.maxSwerveSpeed * translateSpeedLimiter;
+		double rotSpeed = deadzones(Constants.Controls.getDriveRot()) * Constants.maxSwerveAngularSpeed * rotateSpeedLimiter;
 		double RobotRelativeAngle = Constants.Controls.getRobotRelativeDegrees();
 
-		if (RobotRelativeAngle != -1) { // Drives with the DPad instead of the joystick for perfect 45° angles
+		if (RobotRelativeAngle != -1) { 
+			// Drives with the DPad instead of the joystick for perfect 45° angles
 			var POVRadians = Math.toRadians(RobotRelativeAngle);
 			xSpeed = Math.cos(POVRadians) * -0.25 * translateSpeedLimiter;
-			ySpeed = Math.sin(POVRadians) * 0.25 * translateSpeedLimiter;
+			ySpeed = Math.sin(POVRadians) * 0.25  * translateSpeedLimiter;
 			fieldRelative = false; // Forces it to be robot relative
 		} else {
 			if ((xSpeed != 0) || (ySpeed != 0) || (rotSpeed != 0)) {
@@ -38,14 +36,12 @@ public class Teleop {
 			}
 		}
 
-		double xOutput = Constants.slewRateLimiterX.calculate(xSpeed);
-		double yOutput = Constants.slewRateLimiterY.calculate(ySpeed);
+		double xOutput   = Constants.slewRateLimiterX.  calculate(xSpeed);
+		double yOutput   = Constants.slewRateLimiterY.  calculate(ySpeed);
 		double rotOutput = Constants.slewRateLimiterRot.calculate(rotSpeed);
 
 		Drivetrain.drive(
-				xOutput,
-				yOutput,
-				rotOutput,
+				new ChassisSpeeds(xOutput, yOutput, rotOutput),
 				fieldRelative);
 	};
 

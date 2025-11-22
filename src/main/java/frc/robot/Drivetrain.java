@@ -23,7 +23,7 @@ import edu.wpi.first.networktables.StructPublisher;
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
 
-  public static final double maxSwerveSpeed = Constants.maxSwerveSpeed;
+  public static final double maxSwerveSpeed        = Constants.maxSwerveSpeed;
   public static final double maxSwerveAngularSpeed = Constants.maxSwerveAngularSpeed;
 
   private final Translation2d frontLeftLocation = Constants.frontLeftLocation;
@@ -31,10 +31,10 @@ public class Drivetrain {
   private final Translation2d backLeftLocation = Constants.backLeftLocation;
   private final Translation2d backRightLocation = Constants.backRightLocation;
 
-  private final SwerveModule frontLeft = new SwerveModule(Constants.frontLeftIDs[0], Constants.frontLeftIDs[1], Constants.frontLeftIDs[2], Constants.frontLeftOffset);
+  private final SwerveModule frontLeft  = new SwerveModule(Constants.frontLeftIDs[0],  Constants.frontLeftIDs[1],  Constants.frontLeftIDs[2],  Constants.frontLeftOffset);
   private final SwerveModule frontRight = new SwerveModule(Constants.frontRightIDs[0], Constants.frontRightIDs[1], Constants.frontRightIDs[2], Constants.frontRightOffset);
-  private final SwerveModule backLeft = new SwerveModule(Constants.backLeftIDs[0], Constants.backLeftIDs[1], Constants.backLeftIDs[2], Constants.backLeftOffset);
-  private final SwerveModule backRight = new SwerveModule(Constants.backRightIDs[0], Constants.backRightIDs[1], Constants.backRightIDs[2],  Constants.backRightOffset);
+  private final SwerveModule backLeft   = new SwerveModule(Constants.backLeftIDs[0],   Constants.backLeftIDs[1],   Constants.backLeftIDs[2],   Constants.backLeftOffset);
+  private final SwerveModule backRight  = new SwerveModule(Constants.backRightIDs[0],  Constants.backRightIDs[1],  Constants.backRightIDs[2],  Constants.backRightOffset);
 
   public static final Pigeon2 pigeon2 = new Pigeon2(Constants.gyroID);
 
@@ -76,14 +76,14 @@ public class Drivetrain {
    *                      field.
    */
   public void drive(
-      double xSpeed, double ySpeed, double rotSpeed, boolean fieldRelative) {
+      ChassisSpeeds speeds, boolean fieldRelative) {
 
     SwerveModuleState[] swerveModuleStates;
     if (fieldRelative) {
       swerveModuleStates = kinematics.toSwerveModuleStates(
-          ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotSpeed, pigeon2.getRotation2d()));
+          ChassisSpeeds.fromFieldRelativeSpeeds(speeds, pigeon2.getRotation2d()));
     } else {
-      swerveModuleStates = kinematics.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rotSpeed));
+      swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     }
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSwerveSpeed);
     setStates(swerveModuleStates);

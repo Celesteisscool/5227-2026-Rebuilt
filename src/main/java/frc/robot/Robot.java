@@ -12,7 +12,8 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-    
+    Constants.ledClass.setLEDHVAColors();
+    Constants.ledClass.updateLED();
   }
 
   @Override
@@ -24,6 +25,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     Dashboard.addEntry("test", "Hello World!");
     Dashboard.updateEntry("test", "chat is this real?");
+    Dashboard.updateEntry("test", "sigma sigma 67676767676767");
     System.out.println(Dashboard.getEntry("test"));
   }
 

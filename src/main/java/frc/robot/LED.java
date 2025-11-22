@@ -26,9 +26,11 @@ public class LED {
     private final LEDPattern purpleGoldScrolling = purpleGold.scrollAtAbsoluteSpeed(InchesPerSecond.of(12),
             LED_SPACING);
 
+    private final LEDPattern HVAColors = LEDPattern.gradient(GradientType.kContinuous, new Color[] {
+            new Color(0, 0, 128), // Navy Blue
+            new Color(185, 217, 235) }); // Columbia Blue
 
     private final LEDPattern patternYellow = LEDPattern.solid(new Color(255, 223, 0) );
-
 
     private final LEDPattern patternRed = LEDPattern.solid(new Color(100, 0, 0));
     private final LEDPattern patternGreen = LEDPattern.solid(new Color(0, 100, 0));
@@ -71,6 +73,10 @@ public class LED {
 
     public void setLEDPurpleGold() {
         purpleGoldScrolling.atBrightness(Percent.of(25)).applyTo(data);
+    }
+
+    public void setLEDHVAColors() {
+        HVAColors.atBrightness(Percent.of(25)).applyTo(data);
     }
 
     public void updateLED() {

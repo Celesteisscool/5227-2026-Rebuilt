@@ -57,7 +57,7 @@ public class Shooter {
             // Dashboard.addEntry("Hood Angle", 0.0);
         // } 
 
-        desiredAngle += Constants.Controls.getAngleAdjust(); //Should be -1 to 1, this might need a mult
+        // desiredAngle += Constants.Controls.getAngleAdjust(); //Should be -1 to 1, this might need a mult
         desiredAngle = Math.min(90, Math.max(0, desiredAngle)); // Clamps from 0 to 90, not sure what will get reported
         hoodServo.setAngle(desiredAngle); // Updates the setpoint
         Dashboard.updateEntry("Hood Angle", hoodServo.getAngle());

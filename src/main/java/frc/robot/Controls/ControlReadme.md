@@ -52,12 +52,3 @@ public boolean getSuperFunButton() {
     return GetDynamicControl().getSuperFunButton();
 }
 ```
-
-
-## Examples
-- [Interface Header](src/main/java/frc/robot/Controls/ControlInterface.java)
-- [Interface Controls](src/main/java/frc/robot/Controls/RebindDemo.java)
-
-- [Control Swapper](src/main/java/frc/robot/Controls/ControlSwapper.java)
-
-These are some functioning Control Headers / Controls for reference. Every robot is not the same, so be sure to modify these files and use them as references for later. 

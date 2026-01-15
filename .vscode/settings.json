@@ -57,23 +57,5 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-  "spellright.language": [
-    "en-US-10-1."
-  ],
-  "spellright.documentTypes": [
-    "markdown",
-    "latex",
-    "plaintext",
-    "java"
-  ],
-  "cSpell.words": [
-    "Brushless",
-    "Feedforward",
-    "feedforwards",
-    "Holonomic",
-    "odometry",
-    "pathplanner",
-    "setpoint",
-    "teleop"
-  ]
+  "java.dependency.enableDependencyCheckup": false
 }

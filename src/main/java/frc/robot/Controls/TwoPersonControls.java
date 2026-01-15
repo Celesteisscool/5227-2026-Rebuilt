@@ -2,9 +2,10 @@ package frc.robot.Controls;
 
 import edu.wpi.first.wpilibj.XboxController;
 
-public class OnePersonControls implements ControlInterface {
+public class TwoPersonControls implements ControlInterface {
 
     XboxController driverController = new XboxController(0);    
+    XboxController secondaryController = new XboxController(0);    
    
     @Override
     public double getDriveX() {
@@ -22,9 +23,24 @@ public class OnePersonControls implements ControlInterface {
     }   
 
     @Override
-    public boolean getSlowMode() {
-        return driverController.getRightBumperButton();
+    public double getDriveAngle() { // Not used in this control mode
+        return -1;
     }
+
+    @Override
+    public boolean useDriveAngle() { // Not used in this control mode
+        return false;
+    }
+
+    @Override
+    public boolean getSlowMode() {
+        boolean slowMode = (
+            driverController.getRightBumperButton() | 
+            driverController.getLeftBumperButton() );
+        return slowMode;
+    }
+
+    
 
     @Override
     public int getRobotRelativeDegrees() {
@@ -33,16 +49,11 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getShooterButton() {
-        return driverController.getAButton();
+        return secondaryController.getAButton();
     }
 
     @Override
     public boolean getIntakeButton() {
-        return driverController.getBButton();
-    }
-
-    @Override
-    public double getAngleAdjust() {
-        return driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis();
+        return secondaryController.getBButton();
     }
 }

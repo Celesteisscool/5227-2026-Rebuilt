@@ -4,9 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Controls.ControlInterface;
-import frc.robot.Controls.RebindDemo;
-import frc.robot.Controls.simControls;
-
 import frc.robot.Robot;
 
 public class Constants {
@@ -43,17 +40,8 @@ public class Constants {
     public static final Shooter    shooterClass    = new Shooter();
     public static final Dashboard  dashboardClass  = new Dashboard();
 
-    // Controls are dynamic and are not set immediately
+    // Set up which interface we want to use
     public static ControlInterface Controls;
-
-    // Set the controls
-    static {
-        if (frc.robot.Robot.isReal()) {
-            Controls = new RebindDemo();
-        } else {
-            Controls = new simControls();
-        }
-    }
 
     // Auto Constants
     public final static PIDController xController   = new PIDController(10.0, 0.0, 0.0);

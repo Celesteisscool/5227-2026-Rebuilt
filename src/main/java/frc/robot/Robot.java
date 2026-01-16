@@ -6,10 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
-public class Robot extends TimedRobot {
-
-  Teleop teleop = new Teleop();
-  
+public class Robot extends TimedRobot {  
   @Override
   public void robotInit() {
     Constants.ledClass.setLEDHVAColors();
@@ -18,7 +15,6 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotPeriodic() {
-    Constants.drivetrainClass.updateDashboard();
   }
   
   @Override
@@ -44,7 +40,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    teleop.teleopPeriodic();
+    Constants.mecanumClass.driveFunction();
+		Constants.ledClass.updateLED();
   }
 
   @Override

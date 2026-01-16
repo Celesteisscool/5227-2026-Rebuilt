@@ -46,6 +46,7 @@ public class Teleop {
 	};
 
 	public void teleopPeriodic() {
+		Mecanum.testFunctionYay();
 		driveFunction();
 		// Constants.shooterClass.shooterWithHoodServo();
 		Constants.ledClass.updateLED();

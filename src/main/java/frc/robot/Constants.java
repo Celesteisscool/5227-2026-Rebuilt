@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Controls.ControlInterface;
+import frc.robot.Controls.TwoPersonControls;
 import frc.robot.Robot;
 
 public class Constants {
@@ -41,7 +42,7 @@ public class Constants {
     public static final Dashboard  dashboardClass  = new Dashboard();
 
     // Set up which interface we want to use
-    public static ControlInterface Controls;
+    public static ControlInterface Controls = new TwoPersonControls();
 
     // Auto Constants
     public final static PIDController xController   = new PIDController(10.0, 0.0, 0.0);

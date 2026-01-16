@@ -15,18 +15,16 @@ public class Robot extends TimedRobot {
     Constants.ledClass.setLEDHVAColors();
     Constants.ledClass.updateLED();
   }
-
+  
   @Override
   public void robotPeriodic() {
     Constants.drivetrainClass.updateDashboard();
   }
-
+  
   @Override
   public void testInit() {
-    Dashboard.addEntry("test", "Hello World!");
-    Dashboard.updateEntry("test", "chat is this real?");
-    Dashboard.updateEntry("test", "sigma sigma 67676767676767");
-    System.out.println(Dashboard.getEntry("test"));
+    Dashboard.addEntry("yay", false);
+    Dashboard.addEntry("xAxis", 0.0);
   }
 
   @Override

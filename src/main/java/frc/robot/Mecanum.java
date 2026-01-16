@@ -14,4 +14,8 @@ public class Mecanum {
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation
     );
 
+    public static void testFunctionYay() {
+      // PUT CODE HERE PLEASE :>
+    }
+
 }

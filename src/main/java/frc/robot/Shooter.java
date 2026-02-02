@@ -1,65 +1,75 @@
 package frc.robot;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.Servo;
-
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Shooter {
-    SparkMax shooterMotorA = new SparkMax(21, MotorType.kBrushless); 
-    SparkMax shooterMotorB = new SparkMax(22, MotorType.kBrushless);
+    private final SparkMax angleMotor = new SparkMax(5, MotorType.kBrushless);
+    private final SparkMaxConfig angleConfig;
+    private final DigitalInput angleLimitSwitch = new DigitalInput(0);
 
-    SparkMax intakeMotor = new SparkMax(23, MotorType.kBrushless);
+    private final SparkMax shootMotor = new SparkMax(6, MotorType.kBrushless);
+    private final SparkMaxConfig shotConfig;
+    // SparkClosedLoopController shotController = shootMotor.getClosedLoopController();
 
-    Servo hoodServo = new Servo(3);
 
-    double desiredAngle = 0;
-    
+    private final SparkMax intakeMotor = new SparkMax(7, MotorType.kBrushless);
+    private final SparkMax feederMotor = new SparkMax(8, MotorType.kBrushless);
 
-    public void normalShooter() {
-        if (Constants.Controls.getShooterButton()) {
-            shooterMotorA.set(0.5);
-            shooterMotorB.set(0.5);
-        } else {
-            shooterMotorA.set(0);
-            shooterMotorB.set(0);
-        }
 
-        if (Constants.Controls.getIntakeButton()) {
-            intakeMotor.set(0.5);
-        } else {
-            intakeMotor.set(0);
-        }
+    public Shooter() {
+        angleConfig = new SparkMaxConfig();
+        shotConfig = new SparkMaxConfig();
+        // shotConfig.closedLoop.pid(0.01, 0, 0.001);
+        
+        Dashboard.addEntry("Shooter Angle", 0.0);
+        Dashboard.addEntry("Shooter Speed", 0.0);
+        Dashboard.addEntry("Desired Speed", 0.0);
     }
 
-    public void flywheelShooter() {
-        if (Constants.Controls.getShooterButton()) {
-            shooterMotorA.set(1);
-        } else if (shooterMotorA.getEncoder().getVelocity() > 6000) {
-            shooterMotorB.set(0.5);
-        }
-        else {
-            shooterMotorA.set(0);
-            shooterMotorB.set(0);
-        }
-
-        if (Constants.Controls.getIntakeButton()) {
-            intakeMotor.set(0.5);
+    public void changeAngle(double adjustAmount) {
+        adjustAmount = adjustAmount / 10; // Scale down for finer control
+        if (angleLimitSwitch.get() && adjustAmount < 0) {
+            angleMotor.getEncoder().setPosition(0); // Reset position when limit switch is hit
+            angleMotor.set(0);
         } else {
-            intakeMotor.set(0);
+            angleMotor.set(adjustAmount);
         }
+        Dashboard.updateEntry("Shooter Angle", angleMotor.getEncoder().getPosition());
     }
 
+    public double runShooter(double speed) {
+        shootMotor.set(speed/5676); // Assuming 5676 is max RPM for normalization
+        Dashboard.updateEntry("Desired Speed", speed);
+        Dashboard.updateEntry("Shooter Speed", shootMotor.getEncoder().getVelocity());
 
-    public void shooterWithHoodServo() {
-        // if (Dashboard.getEntry("Hood Angle", double.class) == null) {
-            // Dashboard.addEntry("Hood Angle", 0.0);
-        // } 
+        return shootMotor.getEncoder().getVelocity();
+    }
 
-        // desiredAngle += Constants.Controls.getAngleAdjust(); //Should be -1 to 1, this might need a mult
-        desiredAngle = Math.min(90, Math.max(0, desiredAngle)); // Clamps from 0 to 90, not sure what will get reported
-        hoodServo.setAngle(desiredAngle); // Updates the setpoint
-        Dashboard.updateEntry("Hood Angle", hoodServo.getAngle());
+    public void shooterFunction() {
+        if (Constants.Controls.getShooterButton()) {
+            double speed = runShooter(3000); // Example speed value
+            if (speed > 2900 && speed < 3100) { // Check if within acceptable range
+                feederMotor.set(-0.5); 
+                intakeMotor.set(0.5);
+            } else {
+                feederMotor.set(0);
+                intakeMotor.set(0);
+            }
+        }
+        else if (Constants.Controls.getIntakeButton()) {
+            runShooter(0);
+            intakeMotor.set(0.5);
+            feederMotor.set(0.5);
+        } else {
+            runShooter(0);
+            intakeMotor.set(0);
+            feederMotor.set(0);            
+        }
     }
 }

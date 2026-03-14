@@ -41,8 +41,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Constants.mecanumClass.driveFunction();
-		Constants.ledClass.updateLED();
-    Constants.shooterClass.shooterFunction();
+		// Constants.ledClass.updateLED();
   }
 
   @Override
@@ -51,7 +50,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    Constants.ledClass.setLEDYELLOW();
-    Constants.ledClass.updateLED();
+    // Constants.ledClass.setLEDYELLOW();
+    // Constants.ledClass.updateLED();
   }
 }

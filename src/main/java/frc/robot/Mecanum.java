@@ -48,7 +48,11 @@ public class Mecanum {
     }
 
     public void driveFunction() {
-      robotDrive.driveCartesian(Constants.Controls.getDriveX(), Constants.Controls.getDriveY(), Constants.Controls.getDriveRot());
+      robotDrive.driveCartesian(
+        Constants.Controls.getDriveX(), 
+        Constants.Controls.getDriveY(), 
+        Constants.Controls.getDriveRot(), 
+        gyro.getRotation2d());
       odometry.update(gyro.getRotation2d(), wheelPositions);
       odometry.getPoseMeters();
 

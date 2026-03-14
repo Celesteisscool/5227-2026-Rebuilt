@@ -5,11 +5,13 @@ import edu.wpi.first.wpilibj.XboxController;
 public class TwoPersonControls implements ControlInterface {
 
     XboxController driverController = new XboxController(0);    
-    XboxController secondaryController = new XboxController(0);    
+    XboxController secondaryController = new XboxController(1);    
    
+    // DRIVE CONTROLS
+
     @Override
     public double getDriveX() {
-        return driverController.getLeftX();
+        return driverController.getLeftX(); // Might have to swap LeftX / LeftY 
     }   
 
     @Override
@@ -23,29 +25,14 @@ public class TwoPersonControls implements ControlInterface {
     }   
 
     @Override
-    public double getDriveAngle() { // Not used in this control mode
-        return -1;
-    }
-
-    @Override
-    public boolean useDriveAngle() { // Not used in this control mode
-        return false;
-    }
-
-    @Override
     public boolean getSlowMode() {
         boolean slowMode = (
-            driverController.getRightBumperButton() | 
+            driverController.getRightBumperButton() | // Either bumper can be used for slow mode
             driverController.getLeftBumperButton() );
         return slowMode;
     }
 
-    
-
-    @Override
-    public int getRobotRelativeDegrees() {
-        return driverController.getPOV();
-    }
+    // SHOOTER CONTROLS
 
     @Override
     public boolean getShooterButton() {

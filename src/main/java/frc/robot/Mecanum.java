@@ -19,11 +19,11 @@ public class Mecanum {
     Translation2d backLeftLocation   = new Translation2d(-0.381, 0.381);
     Translation2d backRightLocation  = new Translation2d(-0.381, -0.381);
 
-    SparkMax frontLeft  = new SparkMax(0, MotorType.kBrushless);
+    SparkMax frontLeft  = new SparkMax(4, MotorType.kBrushless);
     SparkMax frontRight = new SparkMax(1, MotorType.kBrushless);
-    SparkMax backLeft   = new SparkMax(2, MotorType.kBrushless);
-    SparkMax backRight  = new SparkMax(3, MotorType.kBrushless);
-    Pigeon2 gyro = new Pigeon2(4);
+    SparkMax backLeft   = new SparkMax(3, MotorType.kBrushless);
+    SparkMax backRight  = new SparkMax(2, MotorType.kBrushless);
+    Pigeon2 gyro = new Pigeon2(32);
 
     private final MecanumDrive robotDrive;
 

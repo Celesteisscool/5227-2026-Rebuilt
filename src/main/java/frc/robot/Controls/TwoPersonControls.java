@@ -1,6 +1,7 @@
 package frc.robot.Controls;
 
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants;
 
 public class TwoPersonControls implements ControlInterface {
 
@@ -11,17 +12,24 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public double getDriveX() {
-        return driverController.getLeftX(); // Might have to swap LeftX / LeftY 
+        if (driverController.getAButton()) {
+            return 0.2;
+        }
+        return driverController.getLeftY() / 5;
+        // return ; // Might have to swap LeftX / LeftY 
     }   
 
     @Override
     public double getDriveY() {
-        return driverController.getLeftY();
+        if (driverController.getBButton()) {
+            return 0.2;
+        }
+        return driverController.getLeftX() / 5;
     }   
 
     @Override
     public double getDriveRot() {
-        return driverController.getRightX();
+        return driverController.getRightX() / 5;
     }   
 
     @Override

@@ -7,7 +7,10 @@ public interface ControlInterface {
     double getDriveRot(); 
     boolean getSlowMode(); 
 
+    boolean resetGyro();
+
     // Shooter Controls
     boolean getShooterButton();
     boolean getIntakeButton();   
+    boolean getOuttakeButton();
 }

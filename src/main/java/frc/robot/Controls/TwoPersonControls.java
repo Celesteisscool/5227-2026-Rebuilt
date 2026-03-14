@@ -1,7 +1,6 @@
 package frc.robot.Controls;
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants;
 
 public class TwoPersonControls implements ControlInterface {
 
@@ -10,12 +9,13 @@ public class TwoPersonControls implements ControlInterface {
    
     // DRIVE CONTROLS
 
+    double forwardSlowdown = 4;
+    double sidewaysSlowdown = 2;
+    double rotationSlowdown = 3;
+
     @Override
     public double getDriveX() {
-        if (driverController.getAButton()) {
-            return 0.2;
-        }
-        return driverController.getLeftY() / 5;
+        return - (driverController.getLeftY() / forwardSlowdown);
         // return ; // Might have to swap LeftX / LeftY 
     }   
 
@@ -24,12 +24,12 @@ public class TwoPersonControls implements ControlInterface {
         if (driverController.getBButton()) {
             return 0.2;
         }
-        return driverController.getLeftX() / 5;
+        return (driverController.getLeftX() / sidewaysSlowdown);
     }   
 
     @Override
     public double getDriveRot() {
-        return driverController.getRightX() / 5;
+        return (driverController.getRightX() / rotationSlowdown);
     }   
 
     @Override
@@ -38,6 +38,11 @@ public class TwoPersonControls implements ControlInterface {
             driverController.getRightBumperButton() | // Either bumper can be used for slow mode
             driverController.getLeftBumperButton() );
         return slowMode;
+    }
+
+    @Override
+    public boolean resetGyro() {
+        return driverController.getYButton();
     }
 
     // SHOOTER CONTROLS
@@ -50,5 +55,10 @@ public class TwoPersonControls implements ControlInterface {
     @Override
     public boolean getIntakeButton() {
         return secondaryController.getBButton();
+    }
+
+    @Override 
+    public boolean getOuttakeButton() {
+        return secondaryController.getYButton();
     }
 }

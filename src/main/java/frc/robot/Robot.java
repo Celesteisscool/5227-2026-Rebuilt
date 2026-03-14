@@ -11,6 +11,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     Constants.ledClass.setLEDHVAColors();
     Constants.ledClass.updateLED();
+
+    Dashboard.addEntry("angle", 0.0);
   }
   
   @Override
@@ -41,7 +43,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Constants.mecanumClass.driveFunction();
-    Constants.shooterClass.shooterLogic();
+    Constants.shooterClass.shooterLoopLogic();
 		// Constants.ledClass.updateLED();
   }
 

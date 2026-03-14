@@ -49,16 +49,28 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean getShooterButton() {
-        return secondaryController.getAButton();
+        return (secondaryController.getRightTriggerAxis() > 0.5);
     }
 
     @Override
     public boolean getIntakeButton() {
-        return secondaryController.getBButton();
+        return secondaryController.getLeftTriggerAxis() > 0.5;
     }
 
     @Override 
     public boolean getOuttakeButton() {
-        return secondaryController.getYButton();
+        return secondaryController.getBButton();
     }
+
+    @Override
+    public boolean getReverseShooterButton() {
+        return secondaryController.getStartButton();
+    }
+
+    @Override
+    public double getAngleAdjust() {
+        return (secondaryController.getLeftY()) * 0.02; // VERY SLOW!!!
+    }
+
+    
 }

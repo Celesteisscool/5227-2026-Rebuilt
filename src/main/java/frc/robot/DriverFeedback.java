@@ -8,20 +8,30 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class DriverFeedback {
 
     public static void setupFeedback() {
-        Dashboard.addEntry("timeLeftInPeriod", 0.0);
+        Dashboard.addEntry("Time Left In Period", 0.0);
+        Dashboard.addEntry("Shooter Angle", 0.0);
     }
 
     public static void updateFeedback() {
-        Dashboard.updateEntry("timeLeftInPeriod", timeLeftInPeriod());
+        // DASHBOARD UPDATES //
+        Dashboard.updateEntry("Time Left In Period", timeLeftInPeriod());
+        Dashboard.updateEntry("Shooter Angle", Constants.shooterClass.getShooterAngle());
 
-        if (isWarning() && isHubActive()) {
+        // RUMBLE FEEDBACK //
+        if (closeToShift() && isHubActive()) {
             Constants.Controls.rumble(0.5);
-        } else if (isWarning() && !isHubActive()) {
+        } else if (closeToShift() && !isHubActive()) {
             Constants.Controls.rumble(1.0);
         } else {
             Constants.Controls.rumble(0.0);
         }
 
+        // LEDS //
+        if (Constants.shooterClass.shooting) {
+            Constants.ledClass.setLEDGREEN(Constants.ledClass.hopper);
+        } else {
+            Constants.ledClass.setLEDOff(Constants.ledClass.hopper);
+        }
     }
 
     private static double timeLeftInPeriod() {
@@ -51,7 +61,7 @@ public class DriverFeedback {
         }
     }
 
-    private static boolean isWarning() { // Will get used for rumble
+    private static boolean closeToShift() {
         double timeLeft = timeLeftInPeriod();
         if (timeLeft <= 6 && timeLeft > 4 && timeLeft != -1) {
             return true;

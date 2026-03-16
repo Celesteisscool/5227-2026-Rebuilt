@@ -1,5 +1,6 @@
 package frc.robot.Controls;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Vision;
 
@@ -7,21 +8,23 @@ public class TwoPersonControls implements ControlInterface {
 
     XboxController driverController = new XboxController(0);
     XboxController secondaryController = new XboxController(1);
+   
+    Timer gyroResetTimer = new Timer(); // Timer for reseting gyro
 
     // DRIVE CONTROLS
 
-    double forwardSlowdown = 4;
-    double sidewaysSlowdown = 2;
-    double rotationSlowdown = 3;
+    double forwardSlowdown =  1/4;
+    double sidewaysSlowdown = 1/2;
+    double rotationSlowdown = 1/3;
 
     @Override
     public double getDriveX() {
-        return -(driverController.getLeftY() / forwardSlowdown);
+        return -(driverController.getLeftY() * forwardSlowdown);
     }
 
     @Override
     public double getDriveY() {
-        return (driverController.getLeftX() / sidewaysSlowdown);
+        return (driverController.getLeftX() * sidewaysSlowdown);
     }
 
     @Override
@@ -29,7 +32,7 @@ public class TwoPersonControls implements ControlInterface {
         if (autoAlignButton()) {
             return Vision.getAutoAlignRotation();
         } else {
-            return (driverController.getRightX() / rotationSlowdown);
+            return (driverController.getRightX() * rotationSlowdown);
         }
     }
 
@@ -42,7 +45,22 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean resetGyro() {
-        return driverController.getYButton();
+        if (driverController.getStartButtonPressed()) {
+            gyroResetTimer.reset();
+            gyroResetTimer.start();
+
+        }
+        if (driverController.getStartButtonReleased()) {
+            gyroResetTimer.stop();
+        }
+
+        if (gyroResetTimer.get() > 0.5) {
+            gyroResetTimer.stop();
+            gyroResetTimer.reset();
+            return true; // Only reset gyro if start button is held for more than 0.5 seconds, to prevent accidental resets
+        } else {
+            return false;
+        }
     }
 
     // SHOOTER CONTROLS
@@ -80,6 +98,11 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean autoAlignButton() {
+        return driverController.getAButton();
+    }
+
+    @Override
+    public boolean autoAngleButton() {
         return secondaryController.getAButton();
     }
 

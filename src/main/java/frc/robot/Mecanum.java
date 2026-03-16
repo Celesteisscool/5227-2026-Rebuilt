@@ -30,15 +30,16 @@ public class Mecanum {
 	MecanumDriveKinematics mecanumKinematics = new MecanumDriveKinematics(
 			frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-    MecanumDriveWheelPositions wheelPositions = new MecanumDriveWheelPositions(
-	    frontLeft.getEncoder().getPosition(), frontRight.getEncoder().getPosition(),
-	    backLeft.getEncoder().getPosition(), backRight.getEncoder().getPosition());
+	MecanumDriveWheelPositions wheelPositions = new MecanumDriveWheelPositions(
+			frontLeft.getEncoder().getPosition(), frontRight.getEncoder().getPosition(),
+			backLeft.getEncoder().getPosition(), backRight.getEncoder().getPosition());
 
-    MecanumDriveOdometry odometry;
+	MecanumDriveOdometry odometry;
 
 	public Mecanum() {
 		robotDrive = new MecanumDrive(frontLeft::set, backLeft::set, frontRight::set, backRight::set);
-		// Initialize odometry using the same gyro sign convention as driveCartesian (getGyro())
+		// Initialize odometry using the same gyro sign convention as driveCartesian
+		// (getGyro())
 		odometry = new MecanumDriveOdometry(
 				mecanumKinematics,
 				getGyro(),
@@ -51,33 +52,36 @@ public class Mecanum {
 	}
 
 	public void driveFunction() {
-		double driveX = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveX() * 0.5)
+		double slowSpeed = 0.5;
+		double driveX = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveX() * slowSpeed)
 				: Constants.Controls.getDriveX());
-		double driveY = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveY() * 0.5)
+		double driveY = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveY() * slowSpeed)
 				: Constants.Controls.getDriveY());
-		double driveRot = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveRot() * 0.5)
+		double driveRot = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveRot() * slowSpeed)
 				: Constants.Controls.getDriveRot());
 
-	// Use a consistent gyro sign for field-oriented control.
-	robotDrive.driveCartesian(
-		driveX,
-		driveY,
-		driveRot,
-		getGyro());
+		// Use a consistent gyro sign for field-oriented control.
+		robotDrive.driveCartesian(
+				driveX,
+				driveY,
+				driveRot,
+				getGyro());
 
-	// Refresh wheel positions from encoders before updating odometry.
-	wheelPositions = new MecanumDriveWheelPositions(
-		frontLeft.getEncoder().getPosition(),
-		frontRight.getEncoder().getPosition(),
-		backLeft.getEncoder().getPosition(),
-		backRight.getEncoder().getPosition());
+		// Refresh wheel positions from encoders before updating odometry.
+		wheelPositions = new MecanumDriveWheelPositions(
+				frontLeft.getEncoder().getPosition(),
+				frontRight.getEncoder().getPosition(),
+				backLeft.getEncoder().getPosition(),
+				backRight.getEncoder().getPosition());
 
-	odometry.update(getGyro(), wheelPositions);
+		odometry.update(getGyro(), wheelPositions);
 		odometry.getPoseMeters();
 
 		if (Constants.Controls.resetGyro()) {
 			gyro.reset();
 		}
 	}
+
+
 
 }

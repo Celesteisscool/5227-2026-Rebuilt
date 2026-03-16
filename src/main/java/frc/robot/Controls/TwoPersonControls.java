@@ -1,6 +1,7 @@
 package frc.robot.Controls;
 
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Vision;
 
 public class TwoPersonControls implements ControlInterface {
 
@@ -16,20 +17,20 @@ public class TwoPersonControls implements ControlInterface {
     @Override
     public double getDriveX() {
         return -(driverController.getLeftY() / forwardSlowdown);
-        // return ; // Might have to swap LeftX / LeftY
     }
 
     @Override
     public double getDriveY() {
-        if (driverController.getBButton()) {
-            return 0.2;
-        }
         return (driverController.getLeftX() / sidewaysSlowdown);
     }
 
     @Override
     public double getDriveRot() {
-        return (driverController.getRightX() / rotationSlowdown);
+        if (autoAlignButton()) {
+            return Vision.getAutoAlignRotation();
+        } else {
+            return (driverController.getRightX() / rotationSlowdown);
+        }
     }
 
     @Override
@@ -75,6 +76,11 @@ public class TwoPersonControls implements ControlInterface {
     public void rumble(double strength) {
         driverController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
         secondaryController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
+    }
+
+    @Override
+    public boolean autoAlignButton() {
+        return secondaryController.getAButton();
     }
 
 }

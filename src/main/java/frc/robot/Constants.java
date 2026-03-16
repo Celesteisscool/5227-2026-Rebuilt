@@ -2,17 +2,15 @@ package frc.robot;
 
 import frc.robot.Controls.ControlInterface;
 import frc.robot.Controls.TwoPersonControls;
+import frc.robot.Shooter.Shooter;
 
 public class Constants {
-
-    public static final int gyroID = 32;
-
     // Global Constants
     public static Mecanum mecanumClass = new Mecanum();
     public static final LED ledClass = new LED();
     public static final Shooter shooterClass = new Shooter();
-    public static final Dashboard dashboardClass = new Dashboard(); // Wrapper for Drivestation
-    public static final Drivestation drivestationClass = new Drivestation(); // Actual Drivestation
+    public static final Dashboard dashboardClass = new Dashboard();
+    public static final DriverFeedback driverFeedbackClass = new DriverFeedback();
 
     // Set up which interface we want to use
     public static ControlInterface Controls = new TwoPersonControls();

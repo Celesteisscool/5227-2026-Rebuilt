@@ -18,5 +18,7 @@ public interface ControlInterface {
 
     double getAngleAdjust(); // for adjusting the angle of the shooter
 
+    boolean autoAlignButton(); // for auto-aligning to the target using vision
+
     void rumble(double strength); // for providing haptic feedback
 }

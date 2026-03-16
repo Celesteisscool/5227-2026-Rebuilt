@@ -11,13 +11,13 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     Constants.ledClass.setLEDHVAColors();
     Dashboard.addEntry("angle", 0.0);
-    Drivestation.setupDrivestation();
+    DriverFeedback.setupFeedback();
   }
 
   @Override
   public void robotPeriodic() {
     Constants.ledClass.updateLED();
-    Drivestation.updateDrivestation();
+    DriverFeedback.updateFeedback();
   }
 
   @Override

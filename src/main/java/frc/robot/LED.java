@@ -30,7 +30,7 @@ public class LED {
             new Color(0, 0, 128), // Navy Blue
             new Color(185, 217, 235) }); // Columbia Blue
 
-    private final LEDPattern patternYellow = LEDPattern.solid(new Color(255, 223, 0) );
+    private final LEDPattern patternYellow = LEDPattern.solid(new Color(255, 223, 0));
     private final LEDPattern patternRed = LEDPattern.solid(new Color(100, 0, 0));
     private final LEDPattern patternGreen = LEDPattern.solid(new Color(0, 100, 0));
     private final LEDPattern patternBlue = LEDPattern.solid(new Color(0, 0, 100));
@@ -41,30 +41,39 @@ public class LED {
         leds.setLength(data.getLength());
         leds.start();
     }
+
     public void setLEDOff() {
         patternOff.applyTo(data);
     }
+
     public void setLEDYELLOW() {
         patternYellow.atBrightness(Percent.of(25)).applyTo(data);
     }
+
     public void setLEDRED() {
         patternRed.applyTo(data);
     }
+
     public void setLEDGREEN() {
         patternGreen.applyTo(data);
     }
+
     public void setLEDBLUE() {
         patternBlue.applyTo(data);
     }
+
     public void setLEDRainbow() {
         scrollingRainbow.applyTo(data);
     }
+
     public void setLEDPurpleGold() {
         purpleGoldScrolling.atBrightness(Percent.of(50)).applyTo(data);
     }
+
     public void setLEDHVAColors() {
         HVAColors.atBrightness(Percent.of(50)).applyTo(data);
     }
+
     public void updateLED() {
         leds.setData(data);
     }

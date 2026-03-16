@@ -5,17 +5,23 @@ import java.util.Optional;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-// This class will be stuff for the drivers, like on screen information
-public class Drivestation {
+public class DriverFeedback {
 
-    public static void setupDrivestation() {
+    public static void setupFeedback() {
         Dashboard.addEntry("timeLeftInPeriod", 0.0);
-        Dashboard.addEntry("Warning", false);
     }
 
-    public static void updateDrivestation() {
+    public static void updateFeedback() {
         Dashboard.updateEntry("timeLeftInPeriod", timeLeftInPeriod());
-        Dashboard.updateEntry("Warning", isWarning());
+
+        if (isWarning() && isHubActive()) {
+            Constants.Controls.rumble(0.5);
+        } else if (isWarning() && !isHubActive()) {
+            Constants.Controls.rumble(1.0);
+        } else {
+            Constants.Controls.rumble(0.0);
+        }
+
     }
 
     private static double timeLeftInPeriod() {
@@ -26,17 +32,17 @@ public class Drivestation {
 
         if (!isAutonomous) {
             if (matchTime > 130) {
-                timerOffset = 130;
+                timerOffset = 130; // Transition period
             } else if (matchTime > 105) {
-                timerOffset = 105;
+                timerOffset = 105; // Shift 1
             } else if (matchTime > 80) {
-                timerOffset = 80;
+                timerOffset = 80; // Shift 2
             } else if (matchTime > 55) {
-                timerOffset = 55;
+                timerOffset = 55; // Shift 3
             } else if (matchTime > 30) {
-                timerOffset = 30;
+                timerOffset = 30; // Shift 4
             } else {
-                timerOffset = 0;
+                timerOffset = 0; // End game
             }
             double output = matchTime - timerOffset;
             return Math.round(output * 10.0) / 10.0; // Rounds to 1 decimal place
@@ -53,7 +59,7 @@ public class Drivestation {
         return false;
     }
 
-    private boolean isHubActive() { // Example code
+    private static boolean isHubActive() { // Code from WPILIB <3
         Optional<Alliance> alliance = DriverStation.getAlliance();
         // If we have no alliance, we cannot be enabled, therefore no hub.
         if (alliance.isEmpty()) {

@@ -1,9 +1,14 @@
-package frc.robot;
+package frc.robot.Shooter;
+
+import java.util.List;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Constants;
+import frc.robot.Dashboard;
+import frc.robot.Vision;
 
 public class Shooter {
     // Shooter code goes here i dont want to break the robot
@@ -15,6 +20,20 @@ public class Shooter {
     SparkMax ShooterMotor = new SparkMax(13, MotorType.kBrushless);
 
     DigitalInput angleSwitch = new DigitalInput(0);
+
+    private ShooterState getWantedShooterState() { // Returns the interpolated value
+        List<ShooterState> FakeValues = List.of( // CHANGE THESE!!!
+                new ShooterState(1.5, 45, 0.3),
+                new ShooterState(3.0, 35, 0.4),
+                new ShooterState(4.5, 25, 0.5),
+                new ShooterState(6.0, 18.0, 0.6));
+        if (Vision.getDistanceToHub() == Double.NaN) {
+            return new ShooterState(0, 0, 0); // default value if we dont see the hub, change this if you want
+        }
+        return ShooterInterpolator.interpolate(FakeValues, Vision.getDistanceToHub());
+    }
+
+    
 
     public void shooterLoopLogic() {
 
@@ -46,6 +65,7 @@ public class Shooter {
             KickerMotor.set(0);
             ShooterMotor.set(0);
         }
+
     }
 
     public void runShooter(double speed) {
@@ -61,7 +81,8 @@ public class Shooter {
             double rollerSpeed = 0.75;
             IntakeMotor.set(rollerSpeed);
             KickerMotor.set(-rollerSpeed);
-        } else {
+        } else { // Turn off roller/kicker if we're not at speed, prevents jamming and shooting
+                 // too early
             IntakeMotor.set(0);
             KickerMotor.set(0);
         }

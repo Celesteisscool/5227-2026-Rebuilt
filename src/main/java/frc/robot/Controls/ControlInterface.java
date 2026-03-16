@@ -7,14 +7,16 @@ public interface ControlInterface {
     double getDriveRot(); 
     boolean getSlowMode(); 
 
-    boolean resetGyro();
+    boolean resetGyro(); // Should not be pressed in comps! only for testing, will remove.
 
     // Shooter Controls
-    boolean getShooterButton();
-    boolean getReverseShooterButton();
+    boolean getShootButton(); // Spin our shooter up to speed, then feed balls in
+    boolean getReverseShootButton(); // Only spins the intake wheels in reverse.
 
-    boolean getIntakeButton();   
-    boolean getOuttakeButton();
+    boolean getIntakeButton();  // Intake into hopper
+    boolean getOuttakeButton(); // Spits out of hopper, for clearing jams and dumping balls
 
     double getAngleAdjust(); // for adjusting the angle of the shooter
+
+    void rumble(double strength); // for providing haptic feedback
 }

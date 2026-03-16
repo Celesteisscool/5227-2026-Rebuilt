@@ -5,7 +5,6 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-
 public class Shooter {
     // Shooter code goes here i dont want to break the robot
 
@@ -19,25 +18,24 @@ public class Shooter {
 
     public void shooterLoopLogic() {
 
-        // INTAKE 
+        // INTAKE
         if (Constants.Controls.getIntakeButton()) {
             Double speed = 0.5;
             IntakeMotor.set(speed);
             KickerMotor.set(speed);
         }
-        // OUTTAKE 
+        // OUTTAKE
         else if (Constants.Controls.getOuttakeButton()) {
             Double speed = -0.5;
             IntakeMotor.set(speed);
             KickerMotor.set(speed);
         }
         // SHOOT
-        else if (Constants.Controls.getShooterButton()) {
-            runShooter(0.4); 
+        else if (Constants.Controls.getShootButton()) {
+            runShooter(0.4);
         }
-
         // REVERSE SHOOTER
-        else if (Constants.Controls.getReverseShooterButton()) {
+        else if (Constants.Controls.getReverseShootButton()) {
             Double speed = -0.75;
             IntakeMotor.set(speed);
             KickerMotor.set(-speed);
@@ -48,51 +46,60 @@ public class Shooter {
             KickerMotor.set(0);
             ShooterMotor.set(0);
         }
-
-        adjustAngle(Constants.Controls.getAngleAdjust());
     }
 
-
-
-    public void runShooter(double speed) { 
+    public void runShooter(double speed) {
         speed = speed * -1;
         // clamp input to safe range [-1, 1]
         speed = Math.max(-1.0, Math.min(1.0, speed));
 
-
         // set shooter motor to requested percent output
         ShooterMotor.set(speed);
 
-
-        if (atSpeed(speed)) {
+        if (shooterAtSpeed(speed)) {
             // simple roller/kicker behavior: run them when shooting is requested
             double rollerSpeed = 0.75;
             IntakeMotor.set(rollerSpeed);
             KickerMotor.set(-rollerSpeed);
+        } else {
+            IntakeMotor.set(0);
+            KickerMotor.set(0);
         }
     }
 
-
-
-
     public void adjustAngle(double speed) { // used for limit switches.
+        speed = Math.max(-1.0, Math.min(1.0, speed)); // clamp input to safe range [-1, 1]
+
+        double maxSpeed = 0.02;
+        speed = speed * maxSpeed; // Cap our speed at 0.02, done this way to give more control
+
         if (!angleSwitch.get() && (speed > 0)) { // if we are trying to move down and the switch is pressed, dont move
             AngleMotor.set(0);
             AngleMotor.getEncoder().setPosition(0);
-        }
-        else if (AngleMotor.getEncoder().getPosition() < -5.2 && (speed < 0)) {
+        } else if (AngleMotor.getEncoder().getPosition() < -5.2 && (speed < 0)) {
             AngleMotor.set(0);
-        }
-        else { 
+        } else {
             AngleMotor.set(speed);
         }
         Dashboard.updateEntry("angle", AngleMotor.getEncoder().getPosition());
-        
     }
 
-    public boolean atSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its exactly equal
+    public void moveAngleTo(double position) {
+        double currentPosition = AngleMotor.getEncoder().getPosition();
+        double error = position - currentPosition;
+
+        if (Math.abs(error) < 0.1) { // if we are close enough to the target, stop moving
+            adjustAngle(0);
+            return;
+        }
+        adjustAngle(error);
+    }
+
+    public boolean shooterAtSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its
+                                                  // exactly equal
         double variance = 10; // 10% variance allowed
-        double shooterSpeed = ( ShooterMotor.getEncoder().getVelocity() / 5676 ); // get current shooter speed as percentage of max RPM
-        return (Math.abs(shooterSpeed - speed) <= (1/variance));
+        double shooterSpeed = (ShooterMotor.getEncoder().getVelocity() / 5676); // get current shooter speed as
+                                                                                // percentage of max RPM
+        return (Math.abs(shooterSpeed - speed) <= (1 / variance));
     }
 }

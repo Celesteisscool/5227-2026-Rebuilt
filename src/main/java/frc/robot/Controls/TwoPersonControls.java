@@ -4,9 +4,9 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public class TwoPersonControls implements ControlInterface {
 
-    XboxController driverController = new XboxController(0);    
-    XboxController secondaryController = new XboxController(1);    
-   
+    XboxController driverController = new XboxController(0);
+    XboxController secondaryController = new XboxController(1);
+
     // DRIVE CONTROLS
 
     double forwardSlowdown = 4;
@@ -15,9 +15,9 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public double getDriveX() {
-        return - (driverController.getLeftY() / forwardSlowdown);
-        // return ; // Might have to swap LeftX / LeftY 
-    }   
+        return -(driverController.getLeftY() / forwardSlowdown);
+        // return ; // Might have to swap LeftX / LeftY
+    }
 
     @Override
     public double getDriveY() {
@@ -25,18 +25,17 @@ public class TwoPersonControls implements ControlInterface {
             return 0.2;
         }
         return (driverController.getLeftX() / sidewaysSlowdown);
-    }   
+    }
 
     @Override
     public double getDriveRot() {
         return (driverController.getRightX() / rotationSlowdown);
-    }   
+    }
 
     @Override
     public boolean getSlowMode() {
-        boolean slowMode = (
-            driverController.getRightBumperButton() | // Either bumper can be used for slow mode
-            driverController.getLeftBumperButton() );
+        boolean slowMode = (driverController.getRightBumperButton() | // Either bumper can be used for slow mode
+                driverController.getLeftBumperButton());
         return slowMode;
     }
 
@@ -48,29 +47,34 @@ public class TwoPersonControls implements ControlInterface {
     // SHOOTER CONTROLS
 
     @Override
-    public boolean getShooterButton() {
+    public boolean getShootButton() {
         return (secondaryController.getRightTriggerAxis() > 0.5);
     }
 
     @Override
     public boolean getIntakeButton() {
-        return secondaryController.getLeftTriggerAxis() > 0.5;
+        return (secondaryController.getLeftTriggerAxis() > 0.5);
     }
 
-    @Override 
+    @Override
     public boolean getOuttakeButton() {
         return secondaryController.getBButton();
     }
 
     @Override
-    public boolean getReverseShooterButton() {
+    public boolean getReverseShootButton() {
         return secondaryController.getStartButton();
     }
 
     @Override
     public double getAngleAdjust() {
-        return (secondaryController.getLeftY()) * 0.02; // VERY SLOW!!!
+        return (secondaryController.getLeftY());
     }
 
-    
+    @Override
+    public void rumble(double strength) {
+        driverController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
+        secondaryController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
+    }
+
 }

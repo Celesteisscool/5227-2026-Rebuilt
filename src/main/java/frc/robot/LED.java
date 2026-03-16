@@ -60,10 +60,10 @@ public class LED {
         scrollingRainbow.applyTo(data);
     }
     public void setLEDPurpleGold() {
-        purpleGoldScrolling.atBrightness(Percent.of(25)).applyTo(data);
+        purpleGoldScrolling.atBrightness(Percent.of(50)).applyTo(data);
     }
     public void setLEDHVAColors() {
-        HVAColors.atBrightness(Percent.of(25)).applyTo(data);
+        HVAColors.atBrightness(Percent.of(50)).applyTo(data);
     }
     public void updateLED() {
         leds.setData(data);

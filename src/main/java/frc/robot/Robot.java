@@ -6,45 +6,42 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
-public class Robot extends TimedRobot {  
+public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     Constants.ledClass.setLEDHVAColors();
-    Constants.ledClass.updateLED();
-
     Dashboard.addEntry("angle", 0.0);
+    Drivestation.setupDrivestation();
   }
-  
+
   @Override
   public void robotPeriodic() {
+    Constants.ledClass.updateLED();
+    Drivestation.updateDrivestation();
   }
-  
+
   @Override
   public void testInit() {
-    Dashboard.addEntry("yay", false);
-    Dashboard.addEntry("xAxis", 0.0);
   }
 
   @Override
   public void autonomousInit() {
-    
+
   }
 
   @Override
   public void autonomousPeriodic() {
   }
 
-
   @Override
   public void teleopInit() {
-    
+
   }
 
   @Override
   public void teleopPeriodic() {
     Constants.mecanumClass.driveFunction();
     Constants.shooterClass.shooterLoopLogic();
-		// Constants.ledClass.updateLED();
   }
 
   @Override
@@ -53,7 +50,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // Constants.ledClass.setLEDYELLOW();
-    // Constants.ledClass.updateLED();
+    Constants.ledClass.setLEDPurpleGold();
   }
 }

@@ -11,7 +11,8 @@ public class Constants {
     public static Mecanum mecanumClass = new Mecanum();
     public static final LED ledClass = new LED();
     public static final Shooter shooterClass = new Shooter();
-    public static final Dashboard dashboardClass = new Dashboard();
+    public static final Dashboard dashboardClass = new Dashboard(); // Wrapper for Drivestation
+    public static final Drivestation drivestationClass = new Drivestation(); // Actual Drivestation
 
     // Set up which interface we want to use
     public static ControlInterface Controls = new TwoPersonControls();

@@ -4,14 +4,53 @@ import java.util.Optional;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Elastic.Elastic;
 
 // This class will be stuff for the drivers, like on screen information
 public class Drivestation {
 
-    public void update() {
-        
+    public static void setupDrivestation() {
+        Dashboard.addEntry("timeLeftInPeriod", 0.0);
+        Dashboard.addEntry("Warning", false);
+    }
+
+    public static void updateDrivestation() {
+        Dashboard.updateEntry("timeLeftInPeriod", timeLeftInPeriod());
+        Dashboard.updateEntry("Warning", isWarning());
+    }
+
+    private static double timeLeftInPeriod() {
+        double matchTime = DriverStation.getMatchTime();
+        boolean isAutonomous = DriverStation.isAutonomousEnabled();
+
+        double timerOffset = 0;
+
+        if (!isAutonomous) {
+            if (matchTime > 130) {
+                timerOffset = 130;
+            } else if (matchTime > 105) {
+                timerOffset = 105;
+            } else if (matchTime > 80) {
+                timerOffset = 80;
+            } else if (matchTime > 55) {
+                timerOffset = 55;
+            } else if (matchTime > 30) {
+                timerOffset = 30;
+            } else {
+                timerOffset = 0;
+            }
+            double output = matchTime - timerOffset;
+            return Math.round(output * 10.0) / 10.0; // Rounds to 1 decimal place
+        } else {
+            return Math.round(matchTime * 10.0) / 10.0;
+        }
+    }
+
+    private static boolean isWarning() { // Will get used for rumble
+        double timeLeft = timeLeftInPeriod();
+        if (timeLeft <= 6 && timeLeft > 4 && timeLeft != -1) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isHubActive() { // Example code
@@ -73,6 +112,5 @@ public class Drivestation {
             return true;
         }
     }
-
 
 }

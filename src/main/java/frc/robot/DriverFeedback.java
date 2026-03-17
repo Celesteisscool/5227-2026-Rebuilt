@@ -2,14 +2,56 @@ package frc.robot;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 
 public class DriverFeedback {
     static String driverMessage = "You got this! GLHF :D";
 
-    public static void setupFeedback() {
+    // ALERTS HERE //
+    static Alert v10Alert = new Alert("Battery below 10v", AlertType.kWarning);
+    static Alert v8Alert = new Alert("Battery below 8v", AlertType.kError);
+    static Alert reverseAlert = new Alert("Reverse shooting occurred", AlertType.kWarning);
+    static Alert shootWithoutHubAlert = new Alert("Shooting without an april tag visible", AlertType.kWarning);
+    static Alert maxImpactAlert = new Alert("", AlertType.kWarning);
+    static double maxImpact = 0;
+    static Alert disconnAlert = new Alert("Controller Disconnected", AlertType.kError);
+
+    private static void updateAlerts() {
+        // These are done this way so that the alerts are sticky
+        if (RobotController.getBatteryVoltage() <= 10) {
+            v10Alert.set(true);
+        }
+        if (RobotController.getBatteryVoltage() <= 8) {
+            v8Alert.set(true);
+        }
+        if (Constants.shooterClass.reverseShoot) {
+            reverseAlert.set(true);
+        }
+        if (Constants.shooterClass.shooting && !Vision.hubVisible) {
+            shootWithoutHubAlert.set(true);
+        }
+
+        double impact = getGyroImpact();
+        if (impact > 2 && impact > maxImpact) {
+            maxImpact = impact;
+            maxImpactAlert.setText("Maximum impact detected: " + impact);
+            maxImpactAlert.set(true);
+        } 
+
+        if (!Constants.Controls.allControlersConnected()) {
+            disconnAlert.set(true);
+        } else {
+            disconnAlert.set(false);
+        }
+    }
+
+    public static void setupDashboard() { // Setup our dashboard entries
         Dashboard.addEntry("Time Left In Period", 0.0);
         Dashboard.addEntry("Shooter Angle", 0.0);
         Dashboard.addEntry("Is Hub Active?", true);
@@ -68,7 +110,14 @@ public class DriverFeedback {
         // } else {
         // Constants.ledClass.setLEDOff(Constants.ledClass.hopper);
         // }
+
+        // ALERTS //
+        updateAlerts();
     }
+
+    ////////////////////
+    // HELPER CLASSES //
+    ////////////////////
 
     private static String getPeriodString() {
         double matchTime = DriverStation.getMatchTime();
@@ -188,6 +237,14 @@ public class DriverFeedback {
             // End game, hub always active.
             return true;
         }
+    }
+
+    private static double getGyroImpact() {
+        Pigeon2 gyro = Constants.mecanumClass.gyro;
+        double x = gyro.getAccelerationX().getValueAsDouble();
+        double y = gyro.getAccelerationY().getValueAsDouble();
+        double impact = Math.hypot(x, y);
+        return impact;
     }
 
 }

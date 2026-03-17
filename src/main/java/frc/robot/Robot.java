@@ -10,7 +10,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Constants.ledClass.setLEDHVAColors(Constants.ledClass.hopper);
-    DriverFeedback.setupFeedback();
+    DriverFeedback.setupDashboard();
   }
 
   @Override

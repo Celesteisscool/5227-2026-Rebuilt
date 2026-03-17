@@ -108,4 +108,9 @@ public class OnePersonControls implements ControlInterface {
         return driverController.getXButton();
     }
 
+    @Override
+    public boolean allControlersConnected() {
+        return (driverController.getButtonCount() > 0);
+    }
+
 }

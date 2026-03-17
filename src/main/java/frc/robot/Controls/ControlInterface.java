@@ -22,4 +22,5 @@ public interface ControlInterface {
     boolean autoAngleButton(); // for auto-adjusting the angle of the shooter using vision
 
     void rumble(double strength, boolean leftRumble); // for providing haptic feedback
+    boolean allControlersConnected(); // for checking if all controllers are connected
 }

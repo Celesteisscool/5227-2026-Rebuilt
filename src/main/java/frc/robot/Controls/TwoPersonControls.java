@@ -112,4 +112,9 @@ public class TwoPersonControls implements ControlInterface {
             secondaryController.setRumble(XboxController.RumbleType.kRightRumble, strength);
         }
     }
+
+    @Override
+    public boolean allControlersConnected() {
+        return (driverController.getButtonCount() > 0 && secondaryController.getButtonCount() > 0);
+    }
 }

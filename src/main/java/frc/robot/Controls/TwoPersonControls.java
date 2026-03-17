@@ -13,9 +13,10 @@ public class TwoPersonControls implements ControlInterface {
 
     // DRIVE CONTROLS
 
-    double forwardSlowdown = 1 / 4;
-    double sidewaysSlowdown = 1 / 2;
-    double rotationSlowdown = 1 / 3;
+    // Use floating-point literals so these are not truncated to zero by integer division
+    double forwardSlowdown = 1.0 / 4.0; // 0.25
+    double sidewaysSlowdown = 1.0 / 2.0; // 0.5
+    double rotationSlowdown = 1.0 / 3.0; // ~0.333...
 
     @Override
     public double getDriveX() {
@@ -29,8 +30,9 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public double getDriveRot() {
+        double visionRotate = Vision.getAutoAlignRotation();
         if (autoAlignButton()) {
-            return Vision.getAutoAlignRotation();
+            return visionRotate;
         } else {
             return (driverController.getRightX() * rotationSlowdown);
         }
@@ -100,6 +102,11 @@ public class TwoPersonControls implements ControlInterface {
     @Override
     public boolean autoAngleButton() {
         return secondaryController.getAButton();
+    }
+
+    @Override
+    public boolean zeroAngleButton() {
+        return secondaryController.getXButton();
     }
 
     @Override

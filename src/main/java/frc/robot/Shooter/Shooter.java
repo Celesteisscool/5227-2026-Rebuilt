@@ -25,6 +25,8 @@ public class Shooter {
     public boolean intaking = false; // whether we are currently trying to intake, used for driver feedback and other things
     public boolean outtaking = false; // whether we are currently trying to outtake, used for driver feedback and other things
     public boolean reverseShoot = false; // whether we are currently trying to reverse shoot, used for driver feedback and other things
+    public boolean atAngle = false;
+
 
     public boolean atSpeed = false; // whether we are at speed or not, used for driver feedback and other things
     public double shooterSpeed = 0; // current shooter speed as percentage of max RPM, used for driver feedback and other things
@@ -35,7 +37,7 @@ public class Shooter {
     DigitalInput angleSwitch = new DigitalInput(0);
 
     private ShooterState getWantedShooterState() { // Returns the interpolated value
-        List<ShooterState> FakeValues = List.of( // CHANGE THESE!!!
+        List<ShooterState> FakeValues = List.of( // CHANGE THESE!!! DISTANCE SHOULD BE ACSCENDING
                 new ShooterState(1.5, 45, 0.3),
                 new ShooterState(3.0, 35, 0.4),
                 new ShooterState(4.5, 25, 0.5),
@@ -48,7 +50,13 @@ public class Shooter {
 
     private void applyShooterState(ShooterState state) {
         setAngle(state.hoodAngleDeg);
-        runShooter(state.flywheelSpeed);
+        if (atAngle) {
+            runShooter(state.flywheelSpeed);
+        } else {
+            intakeMotor.set(0);
+            kickerMotor.set(0);
+            shooterMotor.set(0);
+        }
     }
 
     public void shooterLoopLogic() {
@@ -87,7 +95,16 @@ public class Shooter {
         }
         // AUTO ANGLE AND SHOOT
         else if (Constants.Controls.autoAngleButton()) {
-            setAngle(-2); // JUST TEST CODE RN
+            
+
+
+            applyShooterState(new ShooterState(0, -2, 0.4));
+        }
+        else if (Constants.Controls.zeroAngleButton()) {
+            setAngle(10); // Jams us WAY down.
+        }
+        else if (Math.abs(Constants.Controls.getAngleAdjust()) > 0.1) {
+            adjustAngle(Constants.Controls.getAngleAdjust());
         }
         // DEFAULT TO NOT MOVING
         else {
@@ -141,11 +158,13 @@ public class Shooter {
     }
 
     public void setAngle(double position) {
+        atAngle = false; 
+        
         desiredShooterAngle = position;
         double error = position - getShooterAngle();
-
-        if (Math.abs(error) < 0.1) { // if we are close enough to the target, stop moving
+        if (Math.abs(error) <= 0.075) { // if we are close enough to the target, stop moving
             adjustAngle(0);
+            atAngle = true;
             return;
         }
 

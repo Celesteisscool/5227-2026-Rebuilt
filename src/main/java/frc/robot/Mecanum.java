@@ -79,6 +79,7 @@ public class Mecanum {
 
 		if (Constants.Controls.resetGyro()) {
 			gyro.reset();
+			gyro.setYaw(180);
 		}
 	}
 

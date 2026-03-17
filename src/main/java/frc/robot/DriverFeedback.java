@@ -20,7 +20,8 @@ public class DriverFeedback {
     static Alert shootWithoutHubAlert = new Alert("Shooting without an april tag visible", AlertType.kWarning);
     static Alert maxImpactAlert = new Alert("", AlertType.kWarning);
     static double maxImpact = 0;
-    static Alert disconnAlert = new Alert("Controller Disconnected", AlertType.kError);
+    static Alert disconAlert = new Alert("Controller(s) Disconnected", AlertType.kError);
+    static Alert gyroReset = new Alert("Gyro Reset", AlertType.kWarning);
 
     private static void updateAlerts() {
         // These are done this way so that the alerts are sticky
@@ -33,7 +34,7 @@ public class DriverFeedback {
         if (Constants.shooterClass.reverseShoot) {
             reverseAlert.set(true);
         }
-        if (Constants.shooterClass.shooting && !Vision.hubVisible) {
+        if (Constants.shooterClass.shooting && !Vision.targetVisible) {
             shootWithoutHubAlert.set(true);
         }
 
@@ -45,10 +46,12 @@ public class DriverFeedback {
         } 
 
         if (!Constants.Controls.allControlersConnected()) {
-            disconnAlert.set(true);
+            disconAlert.set(true);
         } else {
-            disconnAlert.set(false);
+            disconAlert.set(false);
         }
+
+        if (Constants.Controls.resetGyro()) { gyroReset.set(true); }
     }
 
     public static void setupDashboard() { // Setup our dashboard entries
@@ -62,12 +65,16 @@ public class DriverFeedback {
 
         Dashboard.addEntry("Shooting", false);
         Dashboard.addEntry("Shooter Speed", 0.0);
+        Dashboard.updateEntry("At Angle", false);
 
         Dashboard.addEntry("Hub Tag Visible", false);
+        Dashboard.addEntry("Angle to Hub", 0.0);
 
         Dashboard.addEntry("Period", driverMessage);
 
         Dashboard.addEntry("Voltage", 0.0);
+        
+
     }
 
     public static void updateFeedback() {
@@ -85,8 +92,10 @@ public class DriverFeedback {
 
         Dashboard.updateEntry("Shooter Angle", Constants.shooterClass.getShooterAngle());
         Dashboard.updateEntry("Desired Angle", Constants.shooterClass.desiredShooterAngle);
+        Dashboard.updateEntry("At Angle", Constants.shooterClass.atAngle);
 
-        Dashboard.updateEntry("Hub Tag Visible", Vision.hubVisible);
+        Dashboard.updateEntry("Hub Tag Visible", Vision.targetVisible);
+        Dashboard.updateEntry("Angle to Hub", Vision.outputFromCode);
 
         Dashboard.updateEntry("Period", getPeriodString());
 

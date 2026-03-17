@@ -1,6 +1,7 @@
 package frc.robot;
 
 import frc.robot.Controls.ControlInterface;
+import frc.robot.Controls.OnePersonControls;
 import frc.robot.Controls.TwoPersonControls;
 import frc.robot.Shooter.Shooter;
 

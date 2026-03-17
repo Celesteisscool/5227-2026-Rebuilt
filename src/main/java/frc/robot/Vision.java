@@ -16,7 +16,7 @@ public class Vision {
 
     // Whether the most recent call to update() found a hub tag we can use. If false,
     // other getters should treat the tag as unavailable.
-    private static boolean hubVisible = false;
+    public static boolean hubVisible = false;
 
     // offset from camera to hub: -23.5 inches on the X axis (converted to meters)
     private final static Transform3d offsetToHub = new Transform3d(

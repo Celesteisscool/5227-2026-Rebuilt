@@ -20,7 +20,17 @@ public class Shooter {
 
     public double getShooterAngle() { return angleMotor.getEncoder().getPosition(); };
 
+
     public boolean shooting = false; // whether we are currently trying to shoot, used for driver feedback and other things
+    public boolean intaking = false; // whether we are currently trying to intake, used for driver feedback and other things
+    public boolean outtaking = false; // whether we are currently trying to outtake, used for driver feedback and other things
+    public boolean reverseShoot = false; // whether we are currently trying to reverse shoot, used for driver feedback and other things
+
+    public boolean atSpeed = false; // whether we are at speed or not, used for driver feedback and other things
+    public double shooterSpeed = 0; // current shooter speed as percentage of max RPM, used for driver feedback and other things
+
+    public double desiredShooterSpeed = 0; // the speed we want to be at, used for driver feedback and other things
+    public double desiredShooterAngle = 0; // the angle we want to be at, used for driver feedback and other things
 
     DigitalInput angleSwitch = new DigitalInput(0);
 
@@ -43,15 +53,24 @@ public class Shooter {
 
     public void shooterLoopLogic() {
 
+        shooting = false;
+        intaking = false;
+        outtaking = false;
+        reverseShoot = false;
+
+        desiredShooterSpeed = 0.0;
+        desiredShooterAngle = 0.0;
         // INTAKE
         if (Constants.Controls.getIntakeButton()) {
             Double speed = 0.5;
+            intaking = true;
             intakeMotor.set(speed);
             kickerMotor.set(speed);
         }
         // OUTTAKE
         else if (Constants.Controls.getOuttakeButton()) {
             Double speed = -0.5;
+            outtaking = true;
             intakeMotor.set(speed);
             kickerMotor.set(speed);
         }
@@ -61,6 +80,7 @@ public class Shooter {
         }
         // REVERSE SHOOTER
         else if (Constants.Controls.getReverseShootButton()) {
+            reverseShoot = true;
             Double speed = -0.75;
             intakeMotor.set(speed);
             kickerMotor.set(-speed);
@@ -71,7 +91,6 @@ public class Shooter {
         }
         // DEFAULT TO NOT MOVING
         else {
-            shooting = false;
             intakeMotor.set(0);
             kickerMotor.set(0);
             shooterMotor.set(0);
@@ -82,10 +101,12 @@ public class Shooter {
 
     public void runShooter(double speed) {
         
-        speed = speed * -1;
         // clamp input to safe range [-1, 1]
         speed = Math.max(-1.0, Math.min(1.0, speed));
-
+        desiredShooterSpeed = speed;
+        speed = speed * -1;
+        
+        
         // set shooter motor to requested percent output
         shooterMotor.set(speed);
 
@@ -120,6 +141,7 @@ public class Shooter {
     }
 
     public void setAngle(double position) {
+        desiredShooterAngle = position;
         double error = position - getShooterAngle();
 
         if (Math.abs(error) < 0.1) { // if we are close enough to the target, stop moving
@@ -139,7 +161,7 @@ public class Shooter {
     public boolean shooterAtSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its
                                                   // exactly equal
         double variance = 10; // 10% variance allowed
-        double shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676); // get current shooter speed as
+        shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676); // get current shooter speed as
                                                                                 // percentage of max RPM
         return (Math.abs(shooterSpeed - speed) <= (1 / variance));
     }

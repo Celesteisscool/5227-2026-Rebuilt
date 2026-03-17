@@ -3,34 +3,95 @@ package frc.robot;
 import java.util.Optional;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class DriverFeedback {
+    static String driverMessage = "You got this! GLHF :D";
 
     public static void setupFeedback() {
         Dashboard.addEntry("Time Left In Period", 0.0);
         Dashboard.addEntry("Shooter Angle", 0.0);
+        Dashboard.addEntry("Is Hub Active?", true);
+
+        Dashboard.addEntry("Intaking", false);
+        Dashboard.addEntry("Outtaking", false);
+        Dashboard.addEntry("Reversing", false);
+
+        Dashboard.addEntry("Shooting", false);
+        Dashboard.addEntry("Shooter Speed", 0.0);
+
+        Dashboard.addEntry("Hub Tag Visible", false);
+
+        Dashboard.addEntry("Period", driverMessage);
+
+        Dashboard.addEntry("Voltage", 0.0);
     }
 
     public static void updateFeedback() {
         // DASHBOARD UPDATES //
         Dashboard.updateEntry("Time Left In Period", timeLeftInPeriod());
+        Dashboard.updateEntry("Is Hub Active?", isHubActive());
+
+        Dashboard.updateEntry("Intaking", Constants.shooterClass.intaking);
+        Dashboard.updateEntry("Outtaking", Constants.shooterClass.outtaking);
+        Dashboard.updateEntry("Shooting", Constants.shooterClass.shooting);
+        Dashboard.updateEntry("Reversing", Constants.shooterClass.reverseShoot);
+
+        Dashboard.updateEntry("Shooter Speed", Constants.shooterClass.shooterSpeed);
+        Dashboard.updateEntry("Desired Speed", Constants.shooterClass.desiredShooterSpeed);
+
         Dashboard.updateEntry("Shooter Angle", Constants.shooterClass.getShooterAngle());
+        Dashboard.updateEntry("Desired Angle", Constants.shooterClass.desiredShooterAngle);
+
+        Dashboard.updateEntry("Hub Tag Visible", Vision.hubVisible);
+
+        Dashboard.updateEntry("Period", getPeriodString());
+
+        Dashboard.updateEntry("Voltage", RobotController.getBatteryVoltage());
 
         // RUMBLE FEEDBACK //
         if (closeToShift() && isHubActive()) {
-            Constants.Controls.rumble(0.5);
+            Constants.Controls.rumble(0.5, true);
+            Constants.Controls.rumble(0.5, false);
         } else if (closeToShift() && !isHubActive()) {
-            Constants.Controls.rumble(1.0);
+            Constants.Controls.rumble(1.0, true);
+            Constants.Controls.rumble(1.0, false);
         } else {
-            Constants.Controls.rumble(0.0);
+            Constants.Controls.rumble(0.0, true);
+            Constants.Controls.rumble(0.0, false);
         }
 
         // LEDS //
-        if (Constants.shooterClass.shooting) {
-            Constants.ledClass.setLEDGREEN(Constants.ledClass.hopper);
+        // if (Constants.shooterClass.shooting) {
+        // Constants.ledClass.setLEDGREEN(Constants.ledClass.hopper);
+        // } else {
+        // Constants.ledClass.setLEDOff(Constants.ledClass.hopper);
+        // }
+    }
+
+    private static String getPeriodString() {
+        double matchTime = DriverStation.getMatchTime();
+        boolean isAutonomous = DriverStation.isAutonomousEnabled();
+
+        if (isAutonomous) {
+            return "Auto : 20";
         } else {
-            Constants.ledClass.setLEDOff(Constants.ledClass.hopper);
+            if (matchTime > 130) {
+                return "1/6 : 10";
+            } else if (matchTime > 105) {
+                return "2/6 : 25";
+            } else if (matchTime > 80) {
+                return "3/6 : 25";
+            } else if (matchTime > 55) {
+                return "4/6 : 25";
+            } else if (matchTime > 30) {
+                return "5/6 : 25";
+            } else if (matchTime != -1) {
+                return "6/6 : 30";
+            } else {
+                return driverMessage;
+            }
         }
     }
 
@@ -63,7 +124,7 @@ public class DriverFeedback {
 
     private static boolean closeToShift() {
         double timeLeft = timeLeftInPeriod();
-        if (timeLeft <= 6 && timeLeft > 4 && timeLeft != -1) {
+        if ((timeLeft <= 5.5) && (timeLeft >= 4.5) && (timeLeft != -1)) {
             return true;
         }
         return false;

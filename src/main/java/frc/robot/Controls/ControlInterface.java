@@ -21,5 +21,5 @@ public interface ControlInterface {
     boolean autoAlignButton(); // for auto-aligning to the target using vision
     boolean autoAngleButton(); // for auto-adjusting the angle of the shooter using vision
 
-    void rumble(double strength); // for providing haptic feedback
+    void rumble(double strength, boolean leftRumble); // for providing haptic feedback
 }

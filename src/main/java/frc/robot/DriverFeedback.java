@@ -14,10 +14,7 @@ public class DriverFeedback {
     static String driverMessage = "You got this! GLHF :D";
 
     // ALERTS HERE //
-    static Alert v10Alert = new Alert("Battery below 10v", AlertType.kWarning);
-    static Alert v8Alert = new Alert("Battery below 8v", AlertType.kError);
     static Alert reverseAlert = new Alert("Reverse shooting occurred", AlertType.kWarning);
-    static Alert shootWithoutHubAlert = new Alert("Shooting without an april tag visible", AlertType.kWarning);
     static Alert maxImpactAlert = new Alert("", AlertType.kWarning);
     static double maxImpact = 0;
     static Alert disconAlert = new Alert("Controller(s) Disconnected", AlertType.kError);
@@ -25,25 +22,15 @@ public class DriverFeedback {
 
     private static void updateAlerts() {
         // These are done this way so that the alerts are sticky
-        if (RobotController.getBatteryVoltage() <= 10) {
-            v10Alert.set(true);
-        }
-        if (RobotController.getBatteryVoltage() <= 8) {
-            v8Alert.set(true);
-        }
         if (Constants.shooterClass.reverseShoot) {
             reverseAlert.set(true);
         }
-        if (Constants.shooterClass.shooting && !Vision.targetVisible) {
-            shootWithoutHubAlert.set(true);
-        }
-
         double impact = getGyroImpact();
         if (impact > 2 && impact > maxImpact) {
             maxImpact = impact;
             maxImpactAlert.setText("Maximum impact detected: " + impact);
             maxImpactAlert.set(true);
-        } 
+        }
 
         if (!Constants.Controls.allControlersConnected()) {
             disconAlert.set(true);
@@ -51,42 +38,45 @@ public class DriverFeedback {
             disconAlert.set(false);
         }
 
-        if (Constants.Controls.resetGyro()) { gyroReset.set(true); }
+        if (Constants.Controls.resetGyro()) {
+            gyroReset.set(true);
+        }
     }
 
     public static void setupDashboard() { // Setup our dashboard entries
-        Dashboard.addEntry("Time Left In Period", 0.0);
-        Dashboard.addEntry("Shooter Angle", 0.0);
-        Dashboard.addEntry("Is Hub Active?", true);
+        // General Info //
+        Dashboard.updateEntry("Time Left In Period", -1.0);
+        Dashboard.updateEntry("Period", getPeriodString());
+        Dashboard.updateEntry("Is Hub Active?", true);
+        Dashboard.updateEntry("Hub Tag Visible", false);
+        Dashboard.updateEntry("Voltage", -1.0);
 
-        Dashboard.addEntry("Intaking", false);
-        Dashboard.addEntry("Outtaking", false);
-        Dashboard.addEntry("Reversing", false);
+        // Shooter Info //
+        Dashboard.updateEntry("Shooter Speed", 0.0);
+        Dashboard.updateEntry("Desired Speed", 0.0);
 
-        Dashboard.addEntry("Shooting", false);
-        Dashboard.addEntry("Shooter Speed", 0.0);
+        Dashboard.updateEntry("Shooter Angle", 0.0);
+        Dashboard.updateEntry("Desired Angle", 0.0);
         Dashboard.updateEntry("At Angle", false);
 
-        Dashboard.addEntry("Hub Tag Visible", false);
-        Dashboard.addEntry("Angle to Hub", 0.0);
-
-        Dashboard.addEntry("Period", driverMessage);
-
-        Dashboard.addEntry("Voltage", 0.0);
-        
+        Dashboard.updateEntry("Intaking", false);
+        Dashboard.updateEntry("Outtaking", false);
+        Dashboard.updateEntry("Shooting", false);
+        Dashboard.updateEntry("Reversing", false);
 
     }
 
     public static void updateFeedback() {
         // DASHBOARD UPDATES //
+
+        // General Info //
         Dashboard.updateEntry("Time Left In Period", timeLeftInPeriod());
+        Dashboard.updateEntry("Period", getPeriodString());
         Dashboard.updateEntry("Is Hub Active?", isHubActive());
+        Dashboard.updateEntry("Hub Tag Visible", Vision.targetVisible);
+        Dashboard.updateEntry("Voltage", RobotController.getBatteryVoltage());
 
-        Dashboard.updateEntry("Intaking", Constants.shooterClass.intaking);
-        Dashboard.updateEntry("Outtaking", Constants.shooterClass.outtaking);
-        Dashboard.updateEntry("Shooting", Constants.shooterClass.shooting);
-        Dashboard.updateEntry("Reversing", Constants.shooterClass.reverseShoot);
-
+        // Shooter Info //
         Dashboard.updateEntry("Shooter Speed", Constants.shooterClass.shooterSpeed);
         Dashboard.updateEntry("Desired Speed", Constants.shooterClass.desiredShooterSpeed);
 
@@ -94,12 +84,10 @@ public class DriverFeedback {
         Dashboard.updateEntry("Desired Angle", Constants.shooterClass.desiredShooterAngle);
         Dashboard.updateEntry("At Angle", Constants.shooterClass.atAngle);
 
-        Dashboard.updateEntry("Hub Tag Visible", Vision.targetVisible);
-        Dashboard.updateEntry("Angle to Hub", Vision.outputFromCode);
-
-        Dashboard.updateEntry("Period", getPeriodString());
-
-        Dashboard.updateEntry("Voltage", RobotController.getBatteryVoltage());
+        Dashboard.updateEntry("Intaking", Constants.shooterClass.intaking);
+        Dashboard.updateEntry("Outtaking", Constants.shooterClass.outtaking);
+        Dashboard.updateEntry("Shooting", Constants.shooterClass.shooting);
+        Dashboard.updateEntry("Reversing", Constants.shooterClass.reverseShoot);
 
         // RUMBLE FEEDBACK //
         if (closeToShift() && isHubActive()) {

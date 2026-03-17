@@ -136,8 +136,10 @@ public class Vision {
         // grace period as rotation so short camera gaps still provide a value.
         long age = System.currentTimeMillis() - lastSeenMillis;
         if (age <= LAST_SEEN_GRACE_MS) {
+            Dashboard.updateEntry("Shooter Distance", lastDistanceToHub);
             return lastDistanceToHub;
         }
+
         return Double.NaN;
     }
 }

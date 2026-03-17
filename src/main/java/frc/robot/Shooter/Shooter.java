@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
+import frc.robot.Dashboard;
 import frc.robot.Vision;
 
 public class Shooter {
@@ -18,18 +19,23 @@ public class Shooter {
     SparkMax angleMotor = new SparkMax(14, MotorType.kBrushless);
     SparkMax shooterMotor = new SparkMax(13, MotorType.kBrushless);
 
-    public double getShooterAngle() { return angleMotor.getEncoder().getPosition(); };
+    public double getShooterAngle() {
+        return angleMotor.getEncoder().getPosition();
+    };
 
-
-    public boolean shooting = false; // whether we are currently trying to shoot, used for driver feedback and other things
-    public boolean intaking = false; // whether we are currently trying to intake, used for driver feedback and other things
-    public boolean outtaking = false; // whether we are currently trying to outtake, used for driver feedback and other things
-    public boolean reverseShoot = false; // whether we are currently trying to reverse shoot, used for driver feedback and other things
+    public boolean shooting = false; // whether we are currently trying to shoot, used for driver feedback and other
+                                     // things
+    public boolean intaking = false; // whether we are currently trying to intake, used for driver feedback and other
+                                     // things
+    public boolean outtaking = false; // whether we are currently trying to outtake, used for driver feedback and
+                                      // other things
+    public boolean reverseShoot = false; // whether we are currently trying to reverse shoot, used for driver feedback
+                                         // and other things
     public boolean atAngle = false;
 
-
     public boolean atSpeed = false; // whether we are at speed or not, used for driver feedback and other things
-    public double shooterSpeed = 0; // current shooter speed as percentage of max RPM, used for driver feedback and other things
+    public double shooterSpeed = 0; // current shooter speed as percentage of max RPM, used for driver feedback and
+                                    // other things
 
     public double desiredShooterSpeed = 0; // the speed we want to be at, used for driver feedback and other things
     public double desiredShooterAngle = 0; // the angle we want to be at, used for driver feedback and other things
@@ -95,15 +101,12 @@ public class Shooter {
         }
         // AUTO ANGLE AND SHOOT
         else if (Constants.Controls.autoAngleButton()) {
-            
-
-
-            applyShooterState(new ShooterState(0, -2, 0.4));
-        }
-        else if (Constants.Controls.zeroAngleButton()) {
+            double speed = (double) Dashboard.getEntry("Shooter Speed");
+            double angle = (double) Dashboard.getEntry("Shooter Angle");
+            applyShooterState(new ShooterState(0, angle, speed));
+        } else if (Constants.Controls.zeroAngleButton()) {
             setAngle(10); // Jams us WAY down.
-        }
-        else if (Math.abs(Constants.Controls.getAngleAdjust()) > 0.1) {
+        } else if (Math.abs(Constants.Controls.getAngleAdjust()) > 0.1) {
             adjustAngle(Constants.Controls.getAngleAdjust());
         }
         // DEFAULT TO NOT MOVING
@@ -117,13 +120,12 @@ public class Shooter {
     }
 
     public void runShooter(double speed) {
-        
+
         // clamp input to safe range [-1, 1]
         speed = Math.max(-1.0, Math.min(1.0, speed));
         desiredShooterSpeed = speed;
         speed = speed * -1;
-        
-        
+
         // set shooter motor to requested percent output
         shooterMotor.set(speed);
 
@@ -158,8 +160,8 @@ public class Shooter {
     }
 
     public void setAngle(double position) {
-        atAngle = false; 
-        
+        atAngle = false;
+
         desiredShooterAngle = position;
         double error = position - getShooterAngle();
         if (Math.abs(error) <= 0.075) { // if we are close enough to the target, stop moving
@@ -181,7 +183,7 @@ public class Shooter {
                                                   // exactly equal
         double variance = 10; // 10% variance allowed
         shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676); // get current shooter speed as
-                                                                                // percentage of max RPM
+                                                                         // percentage of max RPM
         return (Math.abs(shooterSpeed - speed) <= (1 / variance));
     }
 }

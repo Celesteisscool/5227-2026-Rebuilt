@@ -8,11 +8,8 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Classes;
 import frc.robot.Dashboard;
-import frc.robot.Vision;
 
 public class Shooter {
-    // Shooter code goes here i dont want to break the robot
-
     SparkMax intakeMotor = new SparkMax(12, MotorType.kBrushless);
     SparkMax kickerMotor = new SparkMax(11, MotorType.kBrushless);
 
@@ -109,11 +106,9 @@ public class Shooter {
             double speed = (double) Dashboard.getEntry("Shooter Speed");
             double angle = (double) Dashboard.getEntry("Shooter Angle");
             applyShooterState(new ShooterState(0, angle, speed));
-        } 
-        else if (Classes.Controls.zeroAngleButton()) {
+        } else if (Classes.Controls.zeroAngleButton()) {
             setAngle(10); // Jams us WAY down.
-        } 
-        else if (Math.abs(Classes.Controls.getAngleAdjust()) > 0.1) {
+        } else if (Math.abs(Classes.Controls.getAngleAdjust()) > 0.1) {
             adjustAngle(Classes.Controls.getAngleAdjust());
         }
         // DEFAULT TO NOT MOVING
@@ -176,11 +171,12 @@ public class Shooter {
             atAngle = true;
             return;
         }
-
+        error = error * 2;
+        error = Math.max(-1.0, Math.min(1.0, error)); // look i know we clamp it later but i dont trust myself
         if (error > 0) { // if we need to move up, set speed positive, otherwise negative
-            adjustAngle(1);
+            adjustAngle(error);
         } else if (error < 0) {
-            adjustAngle(-1);
+            adjustAngle(error);
         } else {
             adjustAngle(0);
         }

@@ -184,9 +184,9 @@ public class Shooter {
 
     public boolean shooterAtSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its
                                                   // exactly equal
-        double variance = 10; // 10% variance allowed
-        shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676); // get current shooter speed as
+        double variance = 10.0; // 10% variance allowed
+        shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676.0); // get current shooter speed as
                                                                          // percentage of max RPM
-        return (Math.abs(shooterSpeed - speed) <= (1 / variance));
+        return (Math.abs(shooterSpeed - speed) <= (1.0 / variance));
     }
 }

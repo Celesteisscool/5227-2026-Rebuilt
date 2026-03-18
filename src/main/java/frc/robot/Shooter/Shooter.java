@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Classes;
 import frc.robot.Dashboard;
+import frc.robot.Vision;
 
 public class Shooter {
     SparkMax intakeMotor = new SparkMax(12, MotorType.kBrushless);
@@ -40,11 +41,12 @@ public class Shooter {
     DigitalInput angleSwitch = new DigitalInput(0);
 
     private ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
-        List<ShooterState> FakeValues = List.of( // CHANGE THESE!!! DISTANCE SHOULD BE ACSCENDING
-                new ShooterState(1, -1, 0.25),
-                new ShooterState(2, -2, 0.5),
-                new ShooterState(3, -3, 0.75),
-                new ShooterState(4, -4, 1));
+        List<ShooterState> FakeValues = List.of(
+                new ShooterState(2, -0.5, 0.4),
+                new ShooterState(3, -1.75, 0.45),
+                new ShooterState(4, -2.25,0.45),
+                new ShooterState(5, -3.25, 0.52)
+                );
         if (distance == Double.NaN) {
             return new ShooterState(0, 0, 0); // default value if we dont see the hub, change this if you want
         }
@@ -64,11 +66,7 @@ public class Shooter {
 
     public void shooterLoopLogic() {
 
-        ShooterState wanted = getWantedShooterState(2.5);
-        System.out.println("bleh");
-        System.out.println(wanted.hoodAngleDeg);
-        System.out.println(wanted.flywheelSpeed);
-
+        Vision.getDistanceToHub();
         shooting = false;
         intaking = false;
         outtaking = false;
@@ -92,7 +90,7 @@ public class Shooter {
         }
         // SHOOT
         else if (Classes.Controls.getShootButton()) {
-            runShooter(0.4);
+            applyShooterState(getWantedShooterState(Vision.getDistanceToHub()));
         }
         // REVERSE SHOOTER
         else if (Classes.Controls.getReverseShootButton()) {
@@ -103,8 +101,9 @@ public class Shooter {
         }
         // AUTO ANGLE AND SHOOT
         else if (Classes.Controls.autoAngleButton()) {
-            double speed = (double) Dashboard.getEntry("Shooter Speed");
-            double angle = (double) Dashboard.getEntry("Shooter Angle");
+            double speed = (double) Dashboard.getEntry("Debug Speed");
+            double angle = (double) Dashboard.getEntry("Debug Angle");
+            
             applyShooterState(new ShooterState(0, angle, speed));
         } else if (Classes.Controls.zeroAngleButton()) {
             setAngle(10); // Jams us WAY down.
@@ -148,7 +147,7 @@ public class Shooter {
     public void adjustAngle(double speed) { // used for limit switches.
         speed = Math.max(-1.0, Math.min(1.0, speed)); // clamp input to safe range [-1, 1]
 
-        double maxSpeed = 0.02;
+        double maxSpeed = 0.03;
         speed = speed * maxSpeed; // Cap our speed at 0.02, done this way to give more control
 
         if (!angleSwitch.get() && (speed > 0)) { // if we are trying to move down and the switch is pressed, dont move
@@ -171,15 +170,15 @@ public class Shooter {
             atAngle = true;
             return;
         }
-        error = error * 2;
-        error = Math.max(-1.0, Math.min(1.0, error)); // look i know we clamp it later but i dont trust myself
+       
         if (error > 0) { // if we need to move up, set speed positive, otherwise negative
-            adjustAngle(error);
+            adjustAngle(1);
         } else if (error < 0) {
-            adjustAngle(error);
+            adjustAngle(-1);
         } else {
             adjustAngle(0);
         }
+        
     }
 
     public boolean shooterAtSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its

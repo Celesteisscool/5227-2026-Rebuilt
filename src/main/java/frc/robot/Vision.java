@@ -32,6 +32,7 @@ public class Vision {
     private static final long LAST_SEEN_GRACE_MS = 200;
     // Small exponential smoothing on the rotation output to reduce jitter.
     // alpha in (0,1] where larger alpha follows new values more closely.
+    // Lower alpha -> smoother / slower-to-follow output. Tunable.
     private static double smoothedRotation = 0.0;
     private static final double ROTATION_SMOOTHING_ALPHA = 0.5;
 
@@ -58,9 +59,16 @@ public class Vision {
                         // Compute planar distance (meters) from the camera to the hub
                         double distance = Math.hypot(dx, dy);
 
-                        // Record last valid sighting
+                        // Record last valid sighting and apply exponential smoothing
                         lastAngleToHub = angleToHub;
-                        lastDistanceToHub = distance;
+                        
+                        if (Double.isNaN(lastDistanceToHub)) {
+                            lastDistanceToHub = distance;
+                        } else {
+                            lastDistanceToHub = ROTATION_SMOOTHING_ALPHA * distance
+                                    + (1.0 - ROTATION_SMOOTHING_ALPHA) * lastDistanceToHub;
+                        }
+
                         lastSeenMillis = System.currentTimeMillis();
                         targetVisible = true;
                     }
@@ -136,7 +144,9 @@ public class Vision {
         // grace period as rotation so short camera gaps still provide a value.
         long age = System.currentTimeMillis() - lastSeenMillis;
         if (age <= LAST_SEEN_GRACE_MS) {
-            Dashboard.updateEntry("Shooter Distance", lastDistanceToHub);
+            // lastDistanceToHub is updated with exponential smoothing in the camera
+            // callback; report that value directly.
+            Dashboard.updateEntry("Debug Distance", lastDistanceToHub);
             return lastDistanceToHub;
         }
 

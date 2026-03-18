@@ -51,24 +51,28 @@ public class DriverFeedback {
     /** Sets up our dashboard entries */
     public static void setupDashboard() {
         // General Info //
-        Dashboard.updateEntry("Time Left In Period", -1.0);
-        Dashboard.updateEntry("Period", getPeriodString());
-        Dashboard.updateEntry("Is Hub Active?", true);
-        Dashboard.updateEntry("Hub Tag Visible", false);
-        Dashboard.updateEntry("Voltage", -1.0);
+        Dashboard.addEntry("Time Left In Period", -1.0);
+        Dashboard.addEntry("Period", getPeriodString());
+        Dashboard.addEntry("Is Hub Active?", true);
+        Dashboard.addEntry("Hub Tag Visible", false);
+        Dashboard.addEntry("Voltage", -1.0);
 
         // Shooter Info //
-        Dashboard.updateEntry("Shooter Speed", 0.0);
-        Dashboard.updateEntry("Desired Speed", 0.0);
+        Dashboard.addEntry("Shooter Speed", 0.0);
+        Dashboard.addEntry("Desired Speed", 0.0);
 
-        Dashboard.updateEntry("Shooter Angle", 0.0);
-        Dashboard.updateEntry("Desired Angle", 0.0);
-        Dashboard.updateEntry("At Angle", false);
+        Dashboard.addEntry("Shooter Angle", 0.0);
+        Dashboard.addEntry("Desired Angle", 0.0);
+        Dashboard.addEntry("At Angle", false);
 
-        Dashboard.updateEntry("Intaking", false); 
-        Dashboard.updateEntry("Outtaking", false);
-        Dashboard.updateEntry("Shooting", false);
-        Dashboard.updateEntry("Reversing", false);
+        Dashboard.addEntry("Debug Speed", 0.0);
+        Dashboard.addEntry("Debug Angle", 0.0);
+        Dashboard.addEntry("Debug Distance", 0.0);
+
+        Dashboard.addEntry("Intaking", false);
+        Dashboard.addEntry("Outtaking", false);
+        Dashboard.addEntry("Shooting", false);
+        Dashboard.addEntry("Reversing", false);
 
     }
 
@@ -99,7 +103,7 @@ public class DriverFeedback {
         // RUMBLE FEEDBACK //
         if (closeToShift() && isHubActive()) { // if the hub is active, it is most likely going to be inactive
             Classes.Controls.rumble(0.5, true); // rumble just a bit
-            Classes.Controls.rumble(0.5, false); 
+            Classes.Controls.rumble(0.5, false);
         } else if (closeToShift() && !isHubActive()) { // if the hub is inactive, it will be active next shift
             Classes.Controls.rumble(1.0, true); // rumble ALOT
             Classes.Controls.rumble(1.0, false);

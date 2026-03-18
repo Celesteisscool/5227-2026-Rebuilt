@@ -4,8 +4,11 @@ import frc.robot.Controls.ControlInterface;
 import frc.robot.Controls.TwoPersonControls;
 import frc.robot.Shooter.Shooter;
 
-public class Constants {
-    // Global Constants
+/**
+ * Holds all the classes that we need to use globally
+ */
+public class Classes {
+    // Global classes
     public static Mecanum mecanumClass = new Mecanum();
     public static final LED ledClass = new LED();
     public static final Shooter shooterClass = new Shooter();

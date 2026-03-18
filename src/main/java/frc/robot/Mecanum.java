@@ -53,12 +53,12 @@ public class Mecanum {
 
 	public void driveFunction() {
 		double slowSpeed = 0.5;
-		double driveX = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveX() * slowSpeed)
-				: Constants.Controls.getDriveX());
-		double driveY = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveY() * slowSpeed)
-				: Constants.Controls.getDriveY());
-		double driveRot = ((Constants.Controls.getSlowMode()) ? (Constants.Controls.getDriveRot() * slowSpeed)
-				: Constants.Controls.getDriveRot());
+		double driveX = ((Classes.Controls.getSlowMode()) ? (Classes.Controls.getDriveX() * slowSpeed)
+				: Classes.Controls.getDriveX());
+		double driveY = ((Classes.Controls.getSlowMode()) ? (Classes.Controls.getDriveY() * slowSpeed)
+				: Classes.Controls.getDriveY());
+		double driveRot = ((Classes.Controls.getSlowMode()) ? (Classes.Controls.getDriveRot() * slowSpeed)
+				: Classes.Controls.getDriveRot());
 
 		// Use a consistent gyro sign for field-oriented control.
 		robotDrive.driveCartesian(
@@ -77,7 +77,7 @@ public class Mecanum {
 		odometry.update(getGyro(), wheelPositions);
 		odometry.getPoseMeters();
 
-		if (Constants.Controls.resetGyro()) {
+		if (Classes.Controls.resetGyro()) {
 			gyro.reset();
 			gyro.setYaw(180);
 		}

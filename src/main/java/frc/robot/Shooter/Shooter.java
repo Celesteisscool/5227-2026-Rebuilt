@@ -6,7 +6,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants;
+import frc.robot.Classes;
 import frc.robot.Dashboard;
 import frc.robot.Vision;
 
@@ -42,16 +42,16 @@ public class Shooter {
 
     DigitalInput angleSwitch = new DigitalInput(0);
 
-    private ShooterState getWantedShooterState() { // Returns the interpolated value
+    private ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
         List<ShooterState> FakeValues = List.of( // CHANGE THESE!!! DISTANCE SHOULD BE ACSCENDING
-                new ShooterState(1.5, 45, 0.3),
-                new ShooterState(3.0, 35, 0.4),
-                new ShooterState(4.5, 25, 0.5),
-                new ShooterState(6.0, 18.0, 0.6));
-        if (Vision.getDistanceToHub() == Double.NaN) {
+                new ShooterState(1, -1, 0.25),
+                new ShooterState(2, -2, 0.5),
+                new ShooterState(3, -3, 0.75),
+                new ShooterState(4, -4, 1));
+        if (distance == Double.NaN) {
             return new ShooterState(0, 0, 0); // default value if we dont see the hub, change this if you want
         }
-        return ShooterInterpolator.interpolate(FakeValues, Vision.getDistanceToHub());
+        return ShooterInterpolator.interpolate(FakeValues, distance);
     }
 
     private void applyShooterState(ShooterState state) {
@@ -67,6 +67,11 @@ public class Shooter {
 
     public void shooterLoopLogic() {
 
+        ShooterState wanted = getWantedShooterState(2.5);
+        System.out.println("bleh");
+        System.out.println(wanted.hoodAngleDeg);
+        System.out.println(wanted.flywheelSpeed);
+
         shooting = false;
         intaking = false;
         outtaking = false;
@@ -75,39 +80,41 @@ public class Shooter {
         desiredShooterSpeed = 0.0;
         desiredShooterAngle = 0.0;
         // INTAKE
-        if (Constants.Controls.getIntakeButton()) {
+        if (Classes.Controls.getIntakeButton()) {
             Double speed = 0.5;
             intaking = true;
             intakeMotor.set(speed);
             kickerMotor.set(speed);
         }
         // OUTTAKE
-        else if (Constants.Controls.getOuttakeButton()) {
+        else if (Classes.Controls.getOuttakeButton()) {
             Double speed = -0.5;
             outtaking = true;
             intakeMotor.set(speed);
             kickerMotor.set(speed);
         }
         // SHOOT
-        else if (Constants.Controls.getShootButton()) {
+        else if (Classes.Controls.getShootButton()) {
             runShooter(0.4);
         }
         // REVERSE SHOOTER
-        else if (Constants.Controls.getReverseShootButton()) {
+        else if (Classes.Controls.getReverseShootButton()) {
             reverseShoot = true;
             Double speed = -0.75;
             intakeMotor.set(speed);
             kickerMotor.set(-speed);
         }
         // AUTO ANGLE AND SHOOT
-        else if (Constants.Controls.autoAngleButton()) {
+        else if (Classes.Controls.autoAngleButton()) {
             double speed = (double) Dashboard.getEntry("Shooter Speed");
             double angle = (double) Dashboard.getEntry("Shooter Angle");
             applyShooterState(new ShooterState(0, angle, speed));
-        } else if (Constants.Controls.zeroAngleButton()) {
+        } 
+        else if (Classes.Controls.zeroAngleButton()) {
             setAngle(10); // Jams us WAY down.
-        } else if (Math.abs(Constants.Controls.getAngleAdjust()) > 0.1) {
-            adjustAngle(Constants.Controls.getAngleAdjust());
+        } 
+        else if (Math.abs(Classes.Controls.getAngleAdjust()) > 0.1) {
+            adjustAngle(Classes.Controls.getAngleAdjust());
         }
         // DEFAULT TO NOT MOVING
         else {

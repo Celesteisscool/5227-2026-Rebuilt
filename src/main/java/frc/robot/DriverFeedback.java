@@ -11,39 +11,45 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class DriverFeedback {
-    static String driverMessage = "You got this! GLHF :D";
+
+    static String driverMessage = "You got this! GLHF :D"; // Mesage when we dont have a "period" (end of auto and end
+                                                           // of teleop)
 
     // ALERTS HERE //
     static Alert reverseAlert = new Alert("Reverse shooting occurred", AlertType.kWarning);
-    static Alert maxImpactAlert = new Alert("", AlertType.kWarning);
-    static double maxImpact = 0;
     static Alert disconAlert = new Alert("Controller(s) Disconnected", AlertType.kError);
     static Alert gyroReset = new Alert("Gyro Reset", AlertType.kWarning);
 
-    private static void updateAlerts() {
-        // These are done this way so that the alerts are sticky
-        if (Constants.shooterClass.reverseShoot) {
-            reverseAlert.set(true);
-        }
-        double impact = getGyroImpact();
-        if (impact > 2 && impact > maxImpact) {
-            maxImpact = impact;
-            maxImpactAlert.setText("Maximum impact detected: " + impact);
-            maxImpactAlert.set(true);
+    static Alert maxImpactAlert = new Alert("", AlertType.kWarning);
+    static double maxImpact = 0;
+
+    /** Sends alerts if needed */
+    private static void sendAlerts() {
+        // These are done in a way so that the alerts are sticky.
+        if (Classes.shooterClass.reverseShoot) { // Checks if we are "reversing" our shooter
+            reverseAlert.set(true); // Show the alert
         }
 
-        if (!Constants.Controls.allControlersConnected()) {
-            disconAlert.set(true);
+        double impact = getGyroImpact(); // checks the g force applied to our robot
+        if (impact > 2 && impact > maxImpact) { // check if its above 2g's and if its more than the current hardest hit
+            maxImpact = impact; // Update max
+            maxImpactAlert.setText("Maximum impact detected: " + impact); // Change alert text
+            maxImpactAlert.set(true); // Show the alert
+        }
+
+        if (!Classes.Controls.allControlersConnected()) { // Checks if our controllers *arent* connected
+            disconAlert.set(true); // Show the alert
         } else {
-            disconAlert.set(false);
+            disconAlert.set(false); // Hide the alert
         }
 
-        if (Constants.Controls.resetGyro()) {
-            gyroReset.set(true);
+        if (Classes.Controls.resetGyro()) { // Check if the button to reset our control got pressed
+            gyroReset.set(true); // Shows the alert
         }
     }
 
-    public static void setupDashboard() { // Setup our dashboard entries
+    /** Sets up our dashboard entries */
+    public static void setupDashboard() {
         // General Info //
         Dashboard.updateEntry("Time Left In Period", -1.0);
         Dashboard.updateEntry("Period", getPeriodString());
@@ -59,13 +65,14 @@ public class DriverFeedback {
         Dashboard.updateEntry("Desired Angle", 0.0);
         Dashboard.updateEntry("At Angle", false);
 
-        Dashboard.updateEntry("Intaking", false);
+        Dashboard.updateEntry("Intaking", false); 
         Dashboard.updateEntry("Outtaking", false);
         Dashboard.updateEntry("Shooting", false);
         Dashboard.updateEntry("Reversing", false);
 
     }
 
+    /** Updates our dashboard with the values needed. */
     public static void updateFeedback() {
         // DASHBOARD UPDATES //
 
@@ -73,32 +80,32 @@ public class DriverFeedback {
         Dashboard.updateEntry("Time Left In Period", timeLeftInPeriod());
         Dashboard.updateEntry("Period", getPeriodString());
         Dashboard.updateEntry("Is Hub Active?", isHubActive());
-        Dashboard.updateEntry("Hub Tag Visible", Vision.targetVisible);
+        Dashboard.updateEntry("Hub Tag Visible", Vision.isTargetVisible());
         Dashboard.updateEntry("Voltage", RobotController.getBatteryVoltage());
 
         // Shooter Info //
-        Dashboard.updateEntry("Shooter Speed", Constants.shooterClass.shooterSpeed);
-        Dashboard.updateEntry("Desired Speed", Constants.shooterClass.desiredShooterSpeed);
+        Dashboard.updateEntry("Shooter Speed", Classes.shooterClass.shooterSpeed);
+        Dashboard.updateEntry("Desired Speed", Classes.shooterClass.desiredShooterSpeed);
 
-        Dashboard.updateEntry("Shooter Angle", Constants.shooterClass.getShooterAngle());
-        Dashboard.updateEntry("Desired Angle", Constants.shooterClass.desiredShooterAngle);
-        Dashboard.updateEntry("At Angle", Constants.shooterClass.atAngle);
+        Dashboard.updateEntry("Shooter Angle", Classes.shooterClass.getShooterAngle());
+        Dashboard.updateEntry("Desired Angle", Classes.shooterClass.desiredShooterAngle);
+        Dashboard.updateEntry("At Angle", Classes.shooterClass.atAngle);
 
-        Dashboard.updateEntry("Intaking", Constants.shooterClass.intaking);
-        Dashboard.updateEntry("Outtaking", Constants.shooterClass.outtaking);
-        Dashboard.updateEntry("Shooting", Constants.shooterClass.shooting);
-        Dashboard.updateEntry("Reversing", Constants.shooterClass.reverseShoot);
+        Dashboard.updateEntry("Intaking", Classes.shooterClass.intaking);
+        Dashboard.updateEntry("Outtaking", Classes.shooterClass.outtaking);
+        Dashboard.updateEntry("Shooting", Classes.shooterClass.shooting);
+        Dashboard.updateEntry("Reversing", Classes.shooterClass.reverseShoot);
 
         // RUMBLE FEEDBACK //
-        if (closeToShift() && isHubActive()) {
-            Constants.Controls.rumble(0.5, true);
-            Constants.Controls.rumble(0.5, false);
-        } else if (closeToShift() && !isHubActive()) {
-            Constants.Controls.rumble(1.0, true);
-            Constants.Controls.rumble(1.0, false);
+        if (closeToShift() && isHubActive()) { // if the hub is active, it is most likely going to be inactive
+            Classes.Controls.rumble(0.5, true); // rumble just a bit
+            Classes.Controls.rumble(0.5, false); 
+        } else if (closeToShift() && !isHubActive()) { // if the hub is inactive, it will be active next shift
+            Classes.Controls.rumble(1.0, true); // rumble ALOT
+            Classes.Controls.rumble(1.0, false);
         } else {
-            Constants.Controls.rumble(0.0, true);
-            Constants.Controls.rumble(0.0, false);
+            Classes.Controls.rumble(0.0, true); // turn off the rumble
+            Classes.Controls.rumble(0.0, false);
         }
 
         // LEDS //
@@ -109,7 +116,7 @@ public class DriverFeedback {
         // }
 
         // ALERTS //
-        updateAlerts();
+        sendAlerts();
     }
 
     ////////////////////
@@ -237,7 +244,7 @@ public class DriverFeedback {
     }
 
     private static double getGyroImpact() {
-        Pigeon2 gyro = Constants.mecanumClass.gyro;
+        Pigeon2 gyro = Classes.mecanumClass.gyro;
         double x = gyro.getAccelerationX().getValueAsDouble();
         double y = gyro.getAccelerationY().getValueAsDouble();
         double impact = Math.hypot(x, y);

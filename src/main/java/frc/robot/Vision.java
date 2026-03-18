@@ -91,7 +91,7 @@ public class Vision {
 
         // Read current robot heading from the pigeon (use same sign convention as
         // Mecanum.getGyro)
-        var gyroRot = Constants.mecanumClass.gyro.getRotation2d().unaryMinus();
+        var gyroRot = Classes.mecanumClass.gyro.getRotation2d().unaryMinus();
         double currentHeadingDeg = Math.toDegrees(gyroRot.getRadians());
 
         // Desired heading is current heading plus the yaw to the target (angleToHub
@@ -141,5 +141,18 @@ public class Vision {
         }
 
         return Double.NaN;
+    }
+
+    /**
+     * Returns whether a hub tag should be considered visible. This uses the same
+     * grace period (LAST_SEEN_GRACE_MS) as the rotation/distance logic so brief
+     * gaps between camera frames don't cause flicker.
+     */
+    public static boolean isTargetVisible() {
+        if (targetVisible) {
+            return true;
+        }
+        long age = System.currentTimeMillis() - lastSeenMillis;
+        return age <= LAST_SEEN_GRACE_MS;
     }
 }

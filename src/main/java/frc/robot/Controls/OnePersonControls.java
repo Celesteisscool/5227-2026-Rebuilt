@@ -13,7 +13,8 @@ public class OnePersonControls implements ControlInterface {
 
     // DRIVE CONTROLS
 
-    // Use floating-point literals so these are not truncated to zero by integer division
+    // Use floating-point literals so these are not truncated to zero by integer
+    // division
     double forwardSlowdown = 1.0 / 4.0; // 0.25
     double sidewaysSlowdown = 1.0 / 2.0; // 0.5
     double rotationSlowdown = 1.0 / 3.0; // ~0.333...
@@ -40,9 +41,13 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getSlowMode() {
-        boolean slowMode = (driverController.getRightBumperButton() | // Either bumper can be used for slow mode
-                driverController.getLeftBumperButton());
+        boolean slowMode = (driverController.getLeftBumperButton());
         return slowMode;
+    }
+
+    @Override
+    public boolean getBreakMode() {
+        return (driverController.getRightBumperButton());
     }
 
     @Override
@@ -65,6 +70,11 @@ public class OnePersonControls implements ControlInterface {
             return false;
     }
 
+    @Override
+    public boolean autoAlignButton() {
+        return driverController.getAButton();
+    }
+
     // SHOOTER CONTROLS
 
     @Override
@@ -78,26 +88,18 @@ public class OnePersonControls implements ControlInterface {
     }
 
     @Override
-    public boolean getOuttakeButton() {
-        return driverController.getBButton();
-    }
-
-    @Override
     public boolean getReverseShootButton() {
         return driverController.getStartButton();
     }
 
     @Override
-    public double getAngleAdjust() {
-        return 0.0;
-        // return (secondaryController.getLeftY());
+    public boolean getOuttakeButton() {
+        return driverController.getBButton();
     }
 
-    
-
     @Override
-    public boolean autoAlignButton() {
-        return driverController.getAButton();
+    public double getAngleAdjust() {
+        return 0.0; // return (secondaryController.getLeftY());
     }
 
     @Override
@@ -111,14 +113,13 @@ public class OnePersonControls implements ControlInterface {
         return driverController.getXButton();
     }
 
+    // Helper Functions
     @Override
     public void rumble(double strength, boolean leftRumble) {
         if (leftRumble) {
             driverController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
-            // secondaryController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
         } else {
             driverController.setRumble(XboxController.RumbleType.kRightRumble, strength);
-            // secondaryController.setRumble(XboxController.RumbleType.kRightRumble, strength);
         }
     }
 
@@ -126,4 +127,5 @@ public class OnePersonControls implements ControlInterface {
     public boolean allControlersConnected() {
         return (driverController.getButtonCount() > 0);
     }
+
 }

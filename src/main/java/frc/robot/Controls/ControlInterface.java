@@ -6,19 +6,21 @@ public interface ControlInterface {
     double getDriveY(); 
     double getDriveRot(); 
     boolean getSlowMode(); 
-
+    boolean getBreakMode();
+    
     boolean resetGyro(); // Should not be pressed in comps! only for testing, will remove.
-
+    
+    boolean autoAlignButton(); // for auto-aligning to the target using vision
+    
     // Shooter Controls
     boolean getShootButton(); // Spin our shooter up to speed, then feed balls in
-    boolean getReverseShootButton(); // Only spins the intake wheels in reverse.
-
     boolean getIntakeButton();  // Intake into hopper
+    
+    boolean getReverseShootButton(); // Only spins the intake wheels in reverse.
     boolean getOuttakeButton(); // Spits out of hopper, for clearing jams and dumping balls
 
     double getAngleAdjust(); // for adjusting the angle of the shooter
 
-    boolean autoAlignButton(); // for auto-aligning to the target using vision
     boolean autoAngleButton(); // for auto-adjusting the angle of the shooter using vision
     boolean zeroAngleButton(); // move our shooter too zero
 

@@ -17,5 +17,5 @@ public class Classes {
     public static final DriverFeedback driverFeedbackClass = new DriverFeedback();
 
     // Set up which interface we want to use
-    public static ControlInterface Controls = new OnePersonControls();
+    public static ControlInterface Controls = new TwoPersonControls();
 }

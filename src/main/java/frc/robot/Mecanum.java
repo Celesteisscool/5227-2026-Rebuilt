@@ -2,7 +2,12 @@ package frc.robot;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +41,9 @@ public class Mecanum {
 
 	MecanumDriveOdometry odometry; // We dont really use this :>
 
+	SparkBaseConfig breakModeConfig = new SparkMaxConfig().idleMode(IdleMode.kBrake);
+	SparkBaseConfig coastModeConfig = new SparkMaxConfig().idleMode(IdleMode.kCoast);
+
 	public Mecanum() {
 		robotDrive = new MecanumDrive(frontLeft::set, backLeft::set, frontRight::set, backRight::set);
 		// Initialize odometry using the same gyro sign convention as driveCartesian
@@ -48,13 +56,15 @@ public class Mecanum {
 	}
 
 	/** return our gyro's pose as a Rotation2d */
-	private Rotation2d getGyro() { 
+	private Rotation2d getGyro() {
 		return gyro.getRotation2d().unaryMinus();
 	}
 
 	public void driveFunction() {
 		double slowSpeed = 1.0;
-		if (Classes.Controls.getSlowMode()) { slowSpeed = 0.5; } // Only use the slowspeed if we are using slowmode
+		if (Classes.Controls.getSlowMode()) {
+			slowSpeed = 0.5;
+		} // Only use the slowspeed if we are using slowmode
 		double driveX = (Classes.Controls.getDriveX() * slowSpeed);
 		double driveY = (Classes.Controls.getDriveY() * slowSpeed);
 		double driveRot = (Classes.Controls.getDriveRot() * slowSpeed);
@@ -75,13 +85,32 @@ public class Mecanum {
 
 		odometry.update(getGyro(), wheelPositions);
 		odometry.getPoseMeters();
-		
-		if (Classes.Controls.resetGyro()) { 
+
+		if (Classes.Controls.resetGyro()) {
 			gyro.reset();
 			gyro.setYaw(180); // Resets in a way where the intake is facing the drivers
 		}
+
+		setBrakeMode(Classes.Controls.getBreakMode());
 	}
 
-
+	/**
+	 * Simple setter to put the drive SparkMax controllers into Brake (true) or
+	 * Coast (false) idle mode.
+	 */
+	public void setBrakeMode(boolean useBrake) {
+		boolean breaking = frontLeft.configAccessor.getIdleMode().equals(IdleMode.kBrake);
+		if (useBrake && !breaking) {
+			frontLeft.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+			frontRight.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+			backLeft.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+			backRight.configure(breakModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+		} else if (!useBrake && breaking) {
+			frontLeft.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+			frontRight.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+			backLeft.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+			backRight.configure(coastModeConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+		}
+	}
 
 }

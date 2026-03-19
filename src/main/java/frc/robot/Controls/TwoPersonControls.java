@@ -13,7 +13,8 @@ public class TwoPersonControls implements ControlInterface {
 
     // DRIVE CONTROLS
 
-    // Use floating-point literals so these are not truncated to zero by integer division
+    // Use floating-point literals so these are not truncated to zero by integer
+    // division
     double forwardSlowdown = 1.0 / 4.0; // 0.25
     double sidewaysSlowdown = 1.0 / 2.0; // 0.5
     double rotationSlowdown = 1.0 / 3.0; // ~0.333...
@@ -40,9 +41,13 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean getSlowMode() {
-        boolean slowMode = (driverController.getRightBumperButton() | // Either bumper can be used for slow mode
-                driverController.getLeftBumperButton());
+        boolean slowMode = (driverController.getLeftBumperButton());
         return slowMode;
+    }
+
+    @Override
+    public boolean getBreakMode() {
+        return (driverController.getRightBumperButton());
     }
 
     @Override
@@ -65,6 +70,11 @@ public class TwoPersonControls implements ControlInterface {
             return false;
     }
 
+    @Override
+    public boolean autoAlignButton() {
+        return driverController.getAButton();
+    }
+
     // SHOOTER CONTROLS
 
     @Override
@@ -78,13 +88,13 @@ public class TwoPersonControls implements ControlInterface {
     }
 
     @Override
-    public boolean getOuttakeButton() {
-        return secondaryController.getBButton();
+    public boolean getReverseShootButton() {
+        return secondaryController.getStartButton();
     }
 
     @Override
-    public boolean getReverseShootButton() {
-        return secondaryController.getStartButton();
+    public boolean getOuttakeButton() {
+        return secondaryController.getBButton();
     }
 
     @Override
@@ -92,16 +102,10 @@ public class TwoPersonControls implements ControlInterface {
         return (secondaryController.getLeftY());
     }
 
-    
-
-    @Override
-    public boolean autoAlignButton() {
-        return driverController.getAButton();
-    }
-
     @Override
     public boolean autoAngleButton() {
-        return secondaryController.getAButton();
+        return false; // hey dont press this its debug code :>
+        // return secondaryController.getAButton();
     }
 
     @Override
@@ -109,6 +113,7 @@ public class TwoPersonControls implements ControlInterface {
         return secondaryController.getXButton();
     }
 
+    // Helper Functions
     @Override
     public void rumble(double strength, boolean leftRumble) {
         if (leftRumble) {
@@ -124,4 +129,5 @@ public class TwoPersonControls implements ControlInterface {
     public boolean allControlersConnected() {
         return (driverController.getButtonCount() > 0 && secondaryController.getButtonCount() > 0);
     }
+
 }

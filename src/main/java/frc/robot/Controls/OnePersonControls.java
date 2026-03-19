@@ -13,9 +13,10 @@ public class OnePersonControls implements ControlInterface {
 
     // DRIVE CONTROLS
 
-    double forwardSlowdown = 1 / 4;
-    double sidewaysSlowdown = 1 / 2;
-    double rotationSlowdown = 1 / 3;
+    // Use floating-point literals so these are not truncated to zero by integer division
+    double forwardSlowdown = 1.0 / 4.0; // 0.25
+    double sidewaysSlowdown = 1.0 / 2.0; // 0.5
+    double rotationSlowdown = 1.0 / 3.0; // ~0.333...
 
     @Override
     public double getDriveX() {
@@ -29,8 +30,9 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public double getDriveRot() {
+        double visionRotate = Vision.getAutoAlignRotation();
         if (autoAlignButton()) {
-            return Vision.getAutoAlignRotation();
+            return visionRotate;
         } else {
             return (driverController.getRightX() * rotationSlowdown);
         }
@@ -38,18 +40,19 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getSlowMode() {
-        boolean slowMode = (driverController.getLeftStickButton());
+        boolean slowMode = (driverController.getRightBumperButton() | // Either bumper can be used for slow mode
+                driverController.getLeftBumperButton());
         return slowMode;
     }
 
     @Override
     public boolean resetGyro() {
-        if (driverController.getStartButtonPressed()) {
+        if (driverController.getBackButtonPressed()) {
             gyroResetTimer.reset();
             gyroResetTimer.start();
 
         }
-        if (driverController.getStartButtonReleased()) {
+        if (driverController.getBackButtonReleased()) {
             gyroResetTimer.stop();
         }
 
@@ -58,21 +61,20 @@ public class OnePersonControls implements ControlInterface {
             gyroResetTimer.reset();
             return true; // Only reset gyro if start button is held for more than 0.5 seconds, to prevent
                          // accidental resets
-        } else {
+        } else
             return false;
-        }
     }
 
     // SHOOTER CONTROLS
 
     @Override
     public boolean getShootButton() {
-        return (driverController.getRightBumperButton());
+        return (driverController.getRightTriggerAxis() > 0.5);
     }
 
     @Override
     public boolean getIntakeButton() {
-        return (driverController.getLeftBumperButton());
+        return (driverController.getLeftTriggerAxis() > 0.5);
     }
 
     @Override
@@ -82,25 +84,16 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getReverseShootButton() {
-        return driverController.getBackButton();
+        return driverController.getStartButton();
     }
 
     @Override
     public double getAngleAdjust() {
-        return (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()); // Adjusts angle based
-                                                                                                 // on triggers, with a
-                                                                                                 // max adjustment of
-                                                                                                 // 0.5 degrees per loop
+        return 0.0;
+        // return (secondaryController.getLeftY());
     }
 
-    @Override
-    public void rumble(double strength, boolean leftRumble) {
-        if (leftRumble) {
-            driverController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
-        } else {
-            driverController.setRumble(XboxController.RumbleType.kRightRumble, strength);
-        }
-    }
+    
 
     @Override
     public boolean autoAlignButton() {
@@ -109,17 +102,28 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean autoAngleButton() {
+        return false; // Used for debuging
+        // return secondaryController.getAButton();
+    }
+
+    @Override
+    public boolean zeroAngleButton() {
         return driverController.getXButton();
+    }
+
+    @Override
+    public void rumble(double strength, boolean leftRumble) {
+        if (leftRumble) {
+            driverController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
+            // secondaryController.setRumble(XboxController.RumbleType.kLeftRumble, strength);
+        } else {
+            driverController.setRumble(XboxController.RumbleType.kRightRumble, strength);
+            // secondaryController.setRumble(XboxController.RumbleType.kRightRumble, strength);
+        }
     }
 
     @Override
     public boolean allControlersConnected() {
         return (driverController.getButtonCount() > 0);
     }
-
-    @Override
-    public boolean zeroAngleButton() {
-        return false;
-    }
-
 }

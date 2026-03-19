@@ -34,7 +34,9 @@ public class Vision {
     // alpha in (0,1] where larger alpha follows new values more closely.
     // Lower alpha -> smoother / slower-to-follow output. Tunable.
     private static double smoothedRotation = 0.0;
-    private static final double ROTATION_SMOOTHING_ALPHA = 0.5;
+    private static final double rotationSmoothing = 0.75;
+
+    private static final double distanceSmoothing = 0.1;
 
     private static void findHubTagInCamera(PhotonCamera camera) {
         var results = camera.getAllUnreadResults();
@@ -61,12 +63,12 @@ public class Vision {
 
                         // Record last valid sighting and apply exponential smoothing
                         lastAngleToHub = angleToHub;
-                        
+
                         if (Double.isNaN(lastDistanceToHub)) {
                             lastDistanceToHub = distance;
                         } else {
-                            lastDistanceToHub = ROTATION_SMOOTHING_ALPHA * distance
-                                    + (1.0 - ROTATION_SMOOTHING_ALPHA) * lastDistanceToHub;
+                            lastDistanceToHub = distanceSmoothing * distance
+                                    + (1.0 - distanceSmoothing) * lastDistanceToHub;
                         }
 
                         lastSeenMillis = System.currentTimeMillis();
@@ -134,7 +136,7 @@ public class Vision {
         }
 
         // Exponential smoothing to reduce jitter on the returned rotation
-        smoothedRotation = ROTATION_SMOOTHING_ALPHA * output + (1.0 - ROTATION_SMOOTHING_ALPHA) * smoothedRotation;
+        smoothedRotation = rotationSmoothing * output + (1.0 - rotationSmoothing) * smoothedRotation;
 
         return smoothedRotation;
     }

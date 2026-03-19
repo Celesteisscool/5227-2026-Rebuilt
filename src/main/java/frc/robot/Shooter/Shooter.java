@@ -41,16 +41,18 @@ public class Shooter {
     DigitalInput angleSwitch = new DigitalInput(0);
 
     private ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
-        List<ShooterState> FakeValues = List.of(
+        List<ShooterState> ShooterValues = List.of(
                 new ShooterState(2, -0.5, 0.4),
-                new ShooterState(3, -1.75, 0.45),
-                new ShooterState(4, -2.25,0.45),
-                new ShooterState(5, -3.25, 0.52)
+                new ShooterState(3, -1.75, 0.425),
+                new ShooterState(3.5, -1.8, 0.43),
+                new ShooterState(4, -2.3,0.45),
+                new ShooterState(5, -3.25, 0.52),
+                new ShooterState(6, -3.25, 0.6)
                 );
         if (distance == Double.NaN) {
             return new ShooterState(0, 0, 0); // default value if we dont see the hub, change this if you want
         }
-        return ShooterInterpolator.interpolate(FakeValues, distance);
+        return ShooterInterpolator.interpolate(ShooterValues, distance);
     }
 
     private void applyShooterState(ShooterState state) {
@@ -76,7 +78,8 @@ public class Shooter {
         desiredShooterAngle = 0.0;
         // INTAKE
         if (Classes.Controls.getIntakeButton()) {
-            Double speed = 0.5;
+            Double speed = 0.6;
+
             intaking = true;
             intakeMotor.set(speed);
             kickerMotor.set(speed);

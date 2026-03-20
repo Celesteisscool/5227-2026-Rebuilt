@@ -128,15 +128,24 @@ public class DriverFeedback {
             Classes.Controls.rumble(0.0, false);
         }
 
-        Classes.ledClass.setLEDOff();
-        // LEDS //
-        if (Classes.shooterClass.shooting) {
-            Classes.ledClass.setLEDGreen();
-        } else if (Classes.shooterClass.atAngle) {
-            Classes.ledClass.setLEDYellow();
-        } else if (Classes.Controls.getShootButton()) {
-            Classes.ledClass.setLEDRed();
-        }
+        // // LEDS //
+        // Classes.ledClass.setLEDOff();
+        // if (Classes.shooterClass.shooting) {
+        //     Classes.ledClass.setLEDGreen();
+        // } else if (Classes.shooterClass.atAngle) {
+        //     Classes.ledClass.setLEDYellow();
+        // } else if (Classes.Controls.getShootButton()) {
+        //     Classes.ledClass.setLEDRed();
+        // }
+
+        // if (DriverStation.isDisabled()) {
+        //     if (Classes.autoClass.autoRan) {
+        //         Classes.ledClass.setLEDHVA();
+        //     } else {
+        //         Classes.ledClass.setLEDDisable();
+        //     }
+        // }
+
         // ALERTS //
         sendAlerts();
     }

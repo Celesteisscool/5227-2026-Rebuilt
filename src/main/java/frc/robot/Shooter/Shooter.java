@@ -40,7 +40,7 @@ public class Shooter {
 
     DigitalInput angleSwitch = new DigitalInput(0);
 
-    private ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
+    public ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
         List<ShooterState> ShooterValues = List.of(
                 new ShooterState(2, -0.5, 0.4),
                 new ShooterState(3, -1.75, 0.425),
@@ -55,7 +55,7 @@ public class Shooter {
         return ShooterInterpolator.interpolate(ShooterValues, distance);
     }
 
-    private void applyShooterState(ShooterState state) {
+    public void applyShooterState(ShooterState state) {
         setAngle(state.hoodAngleDeg);
         if (atAngle) {
             runShooter(state.flywheelSpeed);
@@ -97,6 +97,8 @@ public class Shooter {
         // SHOOT
         else if (Classes.Controls.getShootButton()) {
             applyShooterState(getWantedShooterState(Vision.getDistanceToHub()));
+        } else if (Classes.autoClass.forceShoot) {
+            // Do nothing, we run the command from the auto :/
         }
         // REVERSE SHOOTER
         else if (Classes.Controls.getReverseShootButton()) {

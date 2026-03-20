@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
-    // Constants.ledClass.setLEDHVAColors(Constants.ledClass.hopper);
     DriverFeedback.setupDashboard();
   }
 
@@ -31,6 +30,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    Classes.autoClass.runAuto();
   }
 
   @Override
@@ -50,6 +50,5 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // Classes.ledClass.setLEDDisable();  
   }
 }

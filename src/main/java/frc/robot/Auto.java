@@ -7,7 +7,7 @@ import frc.robot.Shooter.ShooterState;
 public class Auto {
     public boolean runningAuto = false;
 
-    public String[] autoList = { "Center", "Left Side", "Right Side", "Nothing" };
+    public String[] autoList = {"Nothing", "Center", "Backup" };
 
     String selectedAuto = "";
 
@@ -19,27 +19,20 @@ public class Auto {
     /** Read the selected auto name from the SmartDashboard chooser */
     public void chooseAuto() {
         // Read the string put on the dashboard under "Auto choices" by the chooser
-        selectedAuto = SmartDashboard.getString("Auto choices", autoList[0]);
+        selectedAuto = DriverFeedback.getSelectedAuto();
         System.out.println(selectedAuto);
         Classes.Controls = Classes.AutoControls;
         autoTimer.reset();
         autoTimer.start();
         autoRan = true;
 
-        if (selectedAuto == "Left Side") {
-            Classes.mecanumClass.gyro.setYaw(90); // Might have to swap these :<
-        }
-        if (selectedAuto == "Right Side") {
-            Classes.mecanumClass.gyro.setYaw(-90); // Might have to swap these :<
-        }
-
     }
 
     public void runAuto() {
         if (selectedAuto == "Center") {
             centerAuto();
-        } else if (selectedAuto == "Left Side" | selectedAuto == "Right Side") {
-            sideAuto();
+        } else if (selectedAuto == "Backup") {
+            backupAuto();
         } else if (selectedAuto == "Nothing") {
             // Do nothing :>
         }
@@ -48,31 +41,30 @@ public class Auto {
     }
 
     private void centerAuto() {
+        double visionRotate = Vision.getAutoAlignRotation(); // run this to update vision :<
         // Move back + move hood down
         autoState(0, -0.5, 0, 0, false, false, false, true);
 
         // Stop moving and coast
-        autoState(0.5, 0, 0, 0, false, false, false, false);
+        autoState(1, 0, 0, 0, false, false, false, true);
 
         // Shoot our balls
-        autoState(1, 0, 0, 0, false, true, false, false);
+        autoState(2, 0, 0, 0, false, true, false, false);
 
         // Stop shooting
         autoState(10, 0, 0, 0, false, false, false, false);
     }
 
-    private void sideAuto() {
-        // Move angle down
-        autoState(0, 0, 0, 0, false, false, false, true);
+    private void backupAuto() {
+        // Move back + move hood down
+        autoState(0, -0.5, 0, 0, false, false, false, true);
 
-        // Stop moving angle
-        autoState(1, 0, 0, 0, false, false, false, false);
+        // Stop moving and coast
+        autoState(1, 0, 0, 0, true, false, false, true);
 
-        // Shoot
-        autoShooterState(1.1, Classes.shooterClass.getWantedShooterState(3.65));
+        // Shoot our balls
+        autoState(2, 0, 0, 0, false, false, false, false);
 
-        // Stop Shooting
-        autoState(10, 0, 0, 0, false, false, false, false);
     }
 
     public double forwardInput = 0.0;
@@ -93,7 +85,7 @@ public class Auto {
             boolean intake,
             boolean zeroAngle) {
         if (autoTimer.get() >= time) {
-            forwardInput = forward;
+            forwardInput = -forward; // inverting so that it makes WAY more sense.
             sidewaysInput = sideways;
             rotationInput = rotation;
             breakingInput = breaking;
@@ -104,6 +96,7 @@ public class Auto {
         forceShoot = false;
 
     }
+
 
     private void autoShooterState(double time, ShooterState state) {
         if (autoTimer.get() >= time) {

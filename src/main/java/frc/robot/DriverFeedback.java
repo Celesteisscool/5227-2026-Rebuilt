@@ -50,6 +50,8 @@ public class DriverFeedback {
         }
     }
 
+    public final static SendableChooser<String> autoChooser = new SendableChooser<>();
+
     /** Sets up our dashboard entries */
     public static void setupDashboard() {
         // General Info //
@@ -76,9 +78,9 @@ public class DriverFeedback {
         Dashboard.addEntry("Shooting", false);
         Dashboard.addEntry("Reversing", false);
 
-        // AUTO STUFF //
+        Dashboard.addEntry("Gyro", 0.0);
 
-        final SendableChooser<String> autoChooser = new SendableChooser<>();
+        // AUTO STUFF //
 
         // Populate chooser from Classes.autoClass.autoList (assume it exists)
         for (int i = 0; i < Classes.autoClass.autoList.length; i++) {
@@ -116,6 +118,7 @@ public class DriverFeedback {
         Dashboard.updateEntry("Shooting", Classes.shooterClass.shooting);
         Dashboard.updateEntry("Reversing", Classes.shooterClass.reverseShoot);
 
+        Dashboard.updateEntry("Gyro", Classes.mecanumClass.gyro.getYaw().getValueAsDouble());
         // RUMBLE FEEDBACK //
         if (closeToShift() && isHubActive()) { // if the hub is active, it is most likely going to be inactive
             Classes.Controls.rumble(0.5, true); // rumble just a bit
@@ -131,19 +134,19 @@ public class DriverFeedback {
         // // LEDS //
         // Classes.ledClass.setLEDOff();
         // if (Classes.shooterClass.shooting) {
-        //     Classes.ledClass.setLEDGreen();
+        // Classes.ledClass.setLEDGreen();
         // } else if (Classes.shooterClass.atAngle) {
-        //     Classes.ledClass.setLEDYellow();
+        // Classes.ledClass.setLEDYellow();
         // } else if (Classes.Controls.getShootButton()) {
-        //     Classes.ledClass.setLEDRed();
+        // Classes.ledClass.setLEDRed();
         // }
 
         // if (DriverStation.isDisabled()) {
-        //     if (Classes.autoClass.autoRan) {
-        //         Classes.ledClass.setLEDHVA();
-        //     } else {
-        //         Classes.ledClass.setLEDDisable();
-        //     }
+        // if (Classes.autoClass.autoRan) {
+        // Classes.ledClass.setLEDHVA();
+        // } else {
+        // Classes.ledClass.setLEDDisable();
+        // }
         // }
 
         // ALERTS //
@@ -280,6 +283,10 @@ public class DriverFeedback {
         double y = gyro.getAccelerationY().getValueAsDouble();
         double impact = Math.hypot(x, y);
         return impact;
+    }
+
+    public static String getSelectedAuto() {
+        return autoChooser.getSelected();
     }
 
 }

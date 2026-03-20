@@ -79,7 +79,7 @@ public class Shooter {
         // INTAKE
         if (Classes.Controls.getIntakeButton()) {
             Double speed = 0.6;
-            Double time = (System.currentTimeMillis() / 100.0);
+            Double time = (System.currentTimeMillis() / 75.0);
             Double smooth = Math.round((Math.sin(time)+1)/2) * -speed;
             speed = 0.6 + smooth;
 

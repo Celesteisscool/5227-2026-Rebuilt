@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriverFeedback {
 
@@ -74,6 +76,20 @@ public class DriverFeedback {
         Dashboard.addEntry("Shooting", false);
         Dashboard.addEntry("Reversing", false);
 
+        // AUTO STUFF //
+
+        final SendableChooser<String> autoChooser = new SendableChooser<>();
+
+        // Populate chooser from Classes.autoClass.autoList (assume it exists)
+        for (int i = 0; i < Classes.autoClass.autoList.length; i++) {
+            String autoName = Classes.autoClass.autoList[i];
+            if (i == 0) {
+                autoChooser.setDefaultOption(autoName, autoName);
+            } else {
+                autoChooser.addOption(autoName, autoName);
+            }
+        }
+        SmartDashboard.putData("Auto choices", autoChooser);
     }
 
     /** Updates our dashboard with the values needed. */
@@ -114,13 +130,11 @@ public class DriverFeedback {
 
         Classes.ledClass.setLEDOff();
         // LEDS //
-        if (Classes.shooterClass.shooting){
+        if (Classes.shooterClass.shooting) {
             Classes.ledClass.setLEDGreen();
-        }
-        else if (Classes.shooterClass.atAngle) {
+        } else if (Classes.shooterClass.atAngle) {
             Classes.ledClass.setLEDYellow();
-        }
-        else if (Classes.Controls.getShootButton()){
+        } else if (Classes.Controls.getShootButton()) {
             Classes.ledClass.setLEDRed();
         }
         // ALERTS //

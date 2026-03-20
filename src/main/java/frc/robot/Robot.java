@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    Classes.autoClass.chooseAuto(); // Use auto controls + setup selected auto
 
   }
 
@@ -34,7 +35,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-
+    Classes.Controls = Classes.NormalControls; // Use controllers :>
   }
 
   @Override

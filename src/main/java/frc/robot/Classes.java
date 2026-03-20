@@ -1,5 +1,6 @@
 package frc.robot;
 
+import frc.robot.Controls.AutoControls;
 import frc.robot.Controls.ControlInterface;
 import frc.robot.Controls.OnePersonControls;
 import frc.robot.Controls.TwoPersonControls;
@@ -15,7 +16,13 @@ public class Classes {
     public static final Shooter shooterClass = new Shooter();
     public static final Dashboard dashboardClass = new Dashboard();
     public static final DriverFeedback driverFeedbackClass = new DriverFeedback();
+    public static final Auto autoClass = new Auto();
 
     // Set up which interface we want to use
-    public static ControlInterface Controls = new TwoPersonControls();
+    
+    public static ControlInterface NormalControls = new TwoPersonControls();
+    public static ControlInterface AutoControls = new AutoControls();
+
+    public static ControlInterface Controls = NormalControls;
+    // public static ControlInterface Controls = new OnePersonControls();
 }

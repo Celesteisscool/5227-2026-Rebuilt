@@ -25,6 +25,54 @@ public class Auto {
         autoTimer.reset();
         autoTimer.start();
         autoRan = true;
+
+        if (selectedAuto == "Left Side") {
+            Classes.mecanumClass.gyro.setYaw(90); // Might have to swap these :<
+        }
+        if (selectedAuto == "Right Side") {
+            Classes.mecanumClass.gyro.setYaw(-90); // Might have to swap these :<
+        }
+
+    }
+
+    public void runAuto() {
+        if (selectedAuto == "Center") {
+            centerAuto();
+        } else if (selectedAuto == "Left Side" | selectedAuto == "Right Side") {
+            sideAuto();
+        } else if (selectedAuto == "Nothing") {
+            // Do nothing :>
+        }
+        Classes.mecanumClass.driveFunction(); // Update these with our new values :>
+        Classes.shooterClass.shooterLoopLogic();
+    }
+
+    private void centerAuto() {
+        // Move back + move hood down
+        autoState(0, -0.5, 0, 0, false, false, false, true);
+
+        // Stop moving and coast
+        autoState(0.5, 0, 0, 0, false, false, false, false);
+
+        // Shoot our balls
+        autoState(1, 0, 0, 0, false, true, false, false);
+
+        // Stop shooting
+        autoState(10, 0, 0, 0, false, false, false, false);
+    }
+
+    private void sideAuto() {
+        // Move angle down
+        autoState(0, 0, 0, 0, false, false, false, true);
+
+        // Stop moving angle
+        autoState(1, 0, 0, 0, false, false, false, false);
+
+        // Shoot
+        autoShooterState(1.1, Classes.shooterClass.getWantedShooterState(3.65));
+
+        // Stop Shooting
+        autoState(10, 0, 0, 0, false, false, false, false);
     }
 
     public double forwardInput = 0.0;
@@ -62,45 +110,5 @@ public class Auto {
             Classes.shooterClass.applyShooterState(state);
             forceShoot = true;
         }
-    }
-
-    public void runAuto() {
-        if (selectedAuto == "Center") {
-            centerAuto();
-        } else if (selectedAuto == "Left Side") {
-            leftSideAuto();
-        } else if (selectedAuto == "Right Side") {
-            rightSideAuto();
-        } else if (selectedAuto == "Nothing") {
-            // Do nothing :>
-        }
-        Classes.mecanumClass.driveFunction(); // Update these with our new values :>
-        Classes.shooterClass.shooterLoopLogic();
-    }
-
-    private void centerAuto() {
-        autoState(0, -0.5, 0, 0, false, false, false, true);
-        autoState(0.5, 0, 0, 0, false, false, false, false);
-        autoState(1, 0, 0, 0, false, true, false, false);
-        autoState(5, 0, 0, 0, false, false, false, false);
-    }
-
-    private void sideAuto(double gyroDegrees) {
-        Classes.mecanumClass.gyro.setYaw(90);
-
-        autoState(0.1, 0, 0, 0, false, false, false, true);
-
-        autoState(1, 0, 0, 0, false, false, false, false);
-        autoShooterState(1, Classes.shooterClass.getWantedShooterState(3.65));
-
-        autoState(10, 0, 0, 0, false, false, false, false);
-    }
-
-    private void leftSideAuto() {
-        sideAuto(90);
-    }
-
-    private void rightSideAuto() {
-        sideAuto(-90);
     }
 }

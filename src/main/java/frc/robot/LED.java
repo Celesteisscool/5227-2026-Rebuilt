@@ -4,98 +4,69 @@ import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Percent;
 
-import java.util.Optional;
-
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class LED {
     public AddressableLED leds;
-    public AddressableLEDBuffer data = new AddressableLEDBuffer(100);
+    public AddressableLEDBuffer data = new AddressableLEDBuffer(60);
 
     private final Distance LED_SPACING = Meters.of(1.0 / 60);
 
     // SEGMENTS //
-    public final AddressableLEDBufferView underBumpers = data.createView(0, 59);
-    public final AddressableLEDBufferView hopper = data.createView(60, data.getLength() - 1);
-
+    public final AddressableLEDBufferView leftHopper  = data.createView(0, 29);
+    public final AddressableLEDBufferView rightHopper = data.createView(30, 59).reversed();
 
     // PATTERNS //
-    private final LEDPattern rainbow = LEDPattern.rainbow(255, 128);
-    private final LEDPattern scrollingRainbow = rainbow.scrollAtAbsoluteSpeed(InchesPerSecond.of(12), LED_SPACING);
-    private final LEDPattern purpleGold = LEDPattern.gradient(GradientType.kContinuous, new Color[] {
-            new Color(75, 0, 130), // Purple
-            new Color(255, 223, 0) }); // Gold
-    private final LEDPattern purpleGoldScrolling = purpleGold.scrollAtAbsoluteSpeed(InchesPerSecond.of(12),
+    private final LEDPattern redPattern = LEDPattern.solid(new Color(255, 0, 0));
+    private final LEDPattern yellowPattern = LEDPattern.solid(new Color(255, 223, 0));
+    private final LEDPattern greenPattern = LEDPattern.solid(new Color(0, 255, 0));
+    private final LEDPattern offPattern = LEDPattern.solid(new Color(0, 0, 0));
+
+
+    private final LEDPattern purpleGoldPattern = LEDPattern.gradient(GradientType.kContinuous, new Color[] {
+            new Color(186, 85, 211), // Purple
+            new Color(255, 215, 0) }); // Gold
+
+    private final LEDPattern purpleGoldScrollingPattern = purpleGoldPattern.scrollAtAbsoluteSpeed(InchesPerSecond.of(12),
             LED_SPACING);
-    private final LEDPattern HVAColors = LEDPattern.gradient(GradientType.kContinuous, new Color[] {
-            new Color(0, 0, 128), // Navy Blue
-            new Color(185, 217, 235) }); // Columbia Blue
-    private final LEDPattern yellow = LEDPattern.solid(new Color(255, 223, 0));
-    private final LEDPattern red = LEDPattern.solid(new Color(100, 0, 0));
-    private final LEDPattern green = LEDPattern.solid(new Color(0, 100, 0));
-    private final LEDPattern blue = LEDPattern.solid(new Color(0, 0, 100));
-    private final LEDPattern off = LEDPattern.kOff;
-    // PATTERNS //
 
+
+    // FUNCTIONS //
     public LED() {
-        leds = new AddressableLED(0);
+        leds = new AddressableLED(1);
         leds.setLength(data.getLength());
         leds.start();
     }
 
-    public void setUnderBumperLED() {
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-                red.applyTo(underBumpers);
-            } else if (alliance.isPresent() && alliance.get() == Alliance.Blue) {
-                blue.applyTo(underBumpers);
-            } else {
-                purpleGold.applyTo(underBumpers);
-            }
-        }
+    
+    public void setLEDDisable() {
+        purpleGoldScrollingPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
+        purpleGoldScrollingPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
     }
 
-    public void setLEDOff(AddressableLEDBufferView segment) {
-        off.applyTo(segment);
+    public void setLEDRed() {
+        redPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
+        redPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
+    }
+    public void setLEDYellow() {
+        yellowPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
+        yellowPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
+    }
+    public void setLEDGreen() {
+        greenPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
+        greenPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
     }
 
-    public void setLEDYELLOW(AddressableLEDBufferView segment) {
-        yellow.atBrightness(Percent.of(25)).applyTo(segment);
+    public void setLEDOff() {
+        offPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
+        offPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
     }
-
-    public void setLEDRED(AddressableLEDBufferView segment) {
-        red.applyTo(segment);
-    }
-
-    public void setLEDGREEN(AddressableLEDBufferView segment) {
-        green.applyTo(segment);
-    }
-
-    public void setLEDBLUE(AddressableLEDBufferView segment) {
-        blue.applyTo(segment);
-    }
-
-    public void setLEDRainbow(AddressableLEDBufferView segment) {
-        scrollingRainbow.applyTo(segment);
-    }
-
-    public void setLEDPurpleGold(AddressableLEDBufferView segment) {
-        purpleGoldScrolling.atBrightness(Percent.of(50)).applyTo(segment);
-    }
-
-    public void setLEDHVAColors(AddressableLEDBufferView segment) {
-        HVAColors.atBrightness(Percent.of(50)).applyTo(segment);
-    }
-
     public void updateLED() {
         leds.setData(data);
     }

@@ -4,18 +4,11 @@ import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cameraserver.CameraServerShared;
-import edu.wpi.first.cscore.VideoMode;
-import edu.wpi.first.cscore.raw.RawSource;
-import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
-
-import edu.wpi.first.cscore.VideoMode.*;
 
 public class DriverFeedback {
 
@@ -119,13 +112,17 @@ public class DriverFeedback {
             Classes.Controls.rumble(0.0, false);
         }
 
+        Classes.ledClass.setLEDOff();
         // LEDS //
-        // if (Constants.shooterClass.shooting) {
-        // Constants.ledClass.setLEDGREEN(Constants.ledClass.hopper);
-        // } else {
-        // Constants.ledClass.setLEDOff(Constants.ledClass.hopper);
-        // }
-
+        if (Classes.shooterClass.shooting){
+            Classes.ledClass.setLEDGreen();
+        }
+        else if (Classes.shooterClass.atAngle) {
+            Classes.ledClass.setLEDYellow();
+        }
+        else if (Classes.Controls.getShootButton()){
+            Classes.ledClass.setLEDRed();
+        }
         // ALERTS //
         sendAlerts();
     }

@@ -16,7 +16,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     DriverFeedback.updateFeedback();
-    // Constants.ledClass.updateLED();
+    // Classes.ledClass.updateLED();
   }
 
   @Override
@@ -49,6 +49,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // Constants.ledClass.setLEDPurpleGold(Constants.ledClass.hopper);
+    // Classes.ledClass.setLEDDisable();  
   }
 }

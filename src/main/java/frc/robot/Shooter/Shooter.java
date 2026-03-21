@@ -1,8 +1,6 @@
 package frc.robot.Shooter;
 
 import java.util.List;
-import java.util.ResourceBundle.Control;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -39,7 +37,7 @@ public class Shooter {
     public double desiredShooterSpeed = 0; // the speed we want to be at, used for driver feedback and other things
     public double desiredShooterAngle = 0; // the angle we want to be at, used for driver feedback and other things
 
-    public double speedAdjust = 0.0;
+    public double speedAdjust = 2.0; // start at +2% 
 
     DigitalInput angleSwitch = new DigitalInput(0);
 

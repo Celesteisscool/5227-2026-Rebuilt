@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Shooter.ShooterState;
 
 public class Auto {
@@ -30,7 +29,7 @@ public class Auto {
 
     public void runAuto() {
         if (selectedAuto == "Center") {
-            centerAuto();
+            centerAutoRam();
         } else if (selectedAuto == "Backup") {
             backupAuto();
         } else if (selectedAuto == "Nothing") {
@@ -40,7 +39,8 @@ public class Auto {
         Classes.shooterClass.shooterLoopLogic();
     }
 
-    private void centerAuto() {
+
+    private void centerAutoRam() {
         double visionRotate = Vision.getAutoAlignRotation(); // run this to update vision :<
         // Move back + move hood down
         autoState(0, -0.5, 0, 0, false, false, false, true);
@@ -52,7 +52,19 @@ public class Auto {
         autoState(2, 0, 0, 0, false, true, false, false);
 
         // Stop shooting
-        autoState(10, 0, 0, 0, false, false, false, false);
+        autoState(8, 0, 0, 0, false, false, false, false);
+
+        // Ram into hub
+        autoState(9, 0.7, 0, 0, false, false, false, false);
+
+        // Go back to shoot
+        autoState(10, -0.5, 0, 0, false, false, false, false);
+
+        // chill
+        autoState(11, 0, 0, 0, true, false, false, false);
+
+        // shoot ts
+        autoState(12, 0.0, 0.0, 0.0, false, true, false, false);
     }
 
     private void backupAuto() {
@@ -62,7 +74,7 @@ public class Auto {
         // Stop moving and coast
         autoState(1, 0, 0, 0, true, false, false, true);
 
-        // Shoot our balls
+        // stop breaking
         autoState(2, 0, 0, 0, false, false, false, false);
 
     }

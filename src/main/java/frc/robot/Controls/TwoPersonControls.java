@@ -18,9 +18,14 @@ public class TwoPersonControls implements ControlInterface {
     double forwardSlowdown = 1.0 / 3.0;
     double sidewaysSlowdown = 1.0 / 2.0;
     double rotationSlowdown = 1.0 / 3.0;
+    private double deadzone(double input) {
+        if (Math.abs(input) < 0.1) { input = 0; }
+        return input;
+    }
 
     @Override
     public double getDriveX() {
+
         return -(driverController.getLeftY() * forwardSlowdown);
     }
 
@@ -35,7 +40,7 @@ public class TwoPersonControls implements ControlInterface {
         if (autoAlignButton()) {
             return visionRotate;
         } else {
-            return (driverController.getRightX() * rotationSlowdown);
+            return (deadzone(driverController.getRightX()) * rotationSlowdown);
         }
     }
 
@@ -47,7 +52,7 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean getBreakMode() {
-        return (driverController.getRightBumperButton());
+        return (driverController.getRightY() > 0.8);
     }
 
     @Override
@@ -72,7 +77,7 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean autoAlignButton() {
-        return driverController.getAButton();
+        return (driverController.getRightY() < -0.8); // pushing stick up
     }
 
     // SHOOTER CONTROLS

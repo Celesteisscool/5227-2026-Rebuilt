@@ -80,6 +80,8 @@ public class DriverFeedback {
 
         Dashboard.addEntry("Gyro", 0.0);
 
+        Dashboard.addEntry("Speed Adjust", 0.0);
+
         // AUTO STUFF //
 
         // Populate chooser from Classes.autoClass.autoList (assume it exists)
@@ -119,6 +121,9 @@ public class DriverFeedback {
         Dashboard.updateEntry("Reversing", Classes.shooterClass.reverseShoot);
 
         Dashboard.updateEntry("Gyro", Classes.mecanumClass.gyro.getYaw().getValueAsDouble());
+
+        Dashboard.addEntry("Speed Adjust", Classes.shooterClass.speedAdjust);
+
         // RUMBLE FEEDBACK //
         if (closeToShift() && isHubActive()) { // if the hub is active, it is most likely going to be inactive
             Classes.Controls.rumble(0.5, true); // rumble just a bit

@@ -1,6 +1,7 @@
 package frc.robot.Shooter;
 
 import java.util.List;
+import java.util.ResourceBundle.Control;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -38,6 +39,8 @@ public class Shooter {
     public double desiredShooterSpeed = 0; // the speed we want to be at, used for driver feedback and other things
     public double desiredShooterAngle = 0; // the angle we want to be at, used for driver feedback and other things
 
+    public double speedAdjust = 0.0;
+
     DigitalInput angleSwitch = new DigitalInput(0);
 
     public ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
@@ -58,7 +61,7 @@ public class Shooter {
     public void applyShooterState(ShooterState state) {
         setAngle(state.hoodAngleDeg);
         if (atAngle) {
-            runShooter(state.flywheelSpeed);
+            runShooter(state.flywheelSpeed + (speedAdjust / 100.0));
         } else {
             intakeMotor.set(0);
             kickerMotor.set(0);
@@ -124,6 +127,14 @@ public class Shooter {
             kickerMotor.set(0);
             shooterMotor.set(0);
             angleMotor.set(0);
+        }
+
+        double changeAmount = 2;
+        if (Classes.Controls.speedAdjustUp()) {
+            speedAdjust += changeAmount;
+        } 
+        if (Classes.Controls.speedAdjustDown()) {
+            speedAdjust -= changeAmount;
         }
 
     }

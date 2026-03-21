@@ -128,4 +128,21 @@ public class OnePersonControls implements ControlInterface {
         return (driverController.getButtonCount() > 0);
     }
 
+    int previousDPAD = -1;
+
+    @Override
+    public boolean speedAdjustUp() {
+        boolean output = ((driverController.getPOV() == 0) && (previousDPAD != 0));
+        previousDPAD = driverController.getPOV();
+        return output;
+    }
+
+    @Override
+    public boolean speedAdjustDown() {
+        boolean output = ((driverController.getPOV() == 180) && (previousDPAD != 180));
+        previousDPAD = driverController.getPOV();
+        return output;
+
+    }
+
 }

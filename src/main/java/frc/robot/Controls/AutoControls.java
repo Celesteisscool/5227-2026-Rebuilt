@@ -94,4 +94,14 @@ public class AutoControls implements ControlInterface {
         return true;
     }
 
+    @Override
+    public boolean speedAdjustUp() {
+        return false;
+    }
+
+    @Override
+    public boolean speedAdjustDown() {
+        return false;
+    }
+
 }

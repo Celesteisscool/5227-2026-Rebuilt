@@ -15,9 +15,9 @@ public class TwoPersonControls implements ControlInterface {
 
     // Use floating-point literals so these are not truncated to zero by integer
     // division
-    double forwardSlowdown = 1.0 / 4.0; // 0.25
-    double sidewaysSlowdown = 1.0 / 2.0; // 0.5
-    double rotationSlowdown = 1.0 / 3.0; // ~0.333...
+    double forwardSlowdown = 1.0 / 3.0;
+    double sidewaysSlowdown = 1.0 / 2.0;
+    double rotationSlowdown = 1.0 / 3.0;
 
     @Override
     public double getDriveX() {
@@ -130,4 +130,15 @@ public class TwoPersonControls implements ControlInterface {
         return (driverController.getButtonCount() > 0 && secondaryController.getButtonCount() > 0);
     }
 
+    int previousDPAD = -1;
+
+    @Override
+    public boolean speedAdjustUp() {
+        return secondaryController.getRightBumperButtonPressed();
+    }
+
+    @Override
+    public boolean speedAdjustDown() {
+        return secondaryController.getLeftBumperButtonPressed();
+    }
 }

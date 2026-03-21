@@ -26,4 +26,7 @@ public interface ControlInterface {
 
     void rumble(double strength, boolean leftRumble); // for providing haptic feedback
     boolean allControlersConnected(); // for checking if all controllers are connected
+
+    boolean speedAdjustUp();
+    boolean speedAdjustDown();
 }

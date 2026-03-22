@@ -43,7 +43,7 @@ public class LED {
 
     // FUNCTIONS //
     public LED() {
-        leds = new AddressableLED(1);
+        leds = new AddressableLED(0);
         leds.setLength(data.getLength());
         leds.start();
     }
@@ -64,13 +64,13 @@ public class LED {
     }
 
     public void setLEDYellow() {
-        yellowPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
-        yellowPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
+        yellowPattern.atBrightness(Percent.of(5)).applyTo(leftHopper);
+        yellowPattern.atBrightness(Percent.of(5)).applyTo(rightHopper);
     }
 
     public void setLEDGreen() {
-        greenPattern.atBrightness(Percent.of(10)).applyTo(leftHopper);
-        greenPattern.atBrightness(Percent.of(10)).applyTo(rightHopper);
+        greenPattern.atBrightness(Percent.of(15)).applyTo(leftHopper);
+        greenPattern.atBrightness(Percent.of(15)).applyTo(rightHopper);
     }
 
     public void setLEDOff() {

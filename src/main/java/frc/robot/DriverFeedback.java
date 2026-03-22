@@ -108,7 +108,7 @@ public class DriverFeedback {
         Dashboard.updateEntry("Voltage", RobotController.getBatteryVoltage());
 
         // Shooter Info //
-        Dashboard.updateEntry("Shooter Speed", Classes.shooterClass.shooterSpeed);
+        Dashboard.updateEntry("Shooter Speed", -Classes.shooterClass.shooterSpeed);
         Dashboard.updateEntry("Desired Speed", Classes.shooterClass.desiredShooterSpeed);
 
         Dashboard.updateEntry("Shooter Angle", Classes.shooterClass.getShooterAngle());
@@ -136,23 +136,23 @@ public class DriverFeedback {
             Classes.Controls.rumble(0.0, false);
         }
 
-        // // LEDS //
-        // Classes.ledClass.setLEDOff();
-        // if (Classes.shooterClass.shooting) {
-        // Classes.ledClass.setLEDGreen();
-        // } else if (Classes.shooterClass.atAngle) {
-        // Classes.ledClass.setLEDYellow();
-        // } else if (Classes.Controls.getShootButton()) {
-        // Classes.ledClass.setLEDRed();
-        // }
+        // LEDS //
+        Classes.ledClass.setLEDOff();
+        if (Classes.shooterClass.shooting) {
+            Classes.ledClass.setLEDGreen();
+        } else if (Classes.shooterClass.atAngle) {
+            Classes.ledClass.setLEDYellow();
+        } else if (Classes.Controls.getShootButton()) {
+            Classes.ledClass.setLEDRed();
+        }
 
-        // if (DriverStation.isDisabled()) {
-        // if (Classes.autoClass.autoRan) {
-        // Classes.ledClass.setLEDHVA();
-        // } else {
-        // Classes.ledClass.setLEDDisable();
-        // }
-        // }
+        if (DriverStation.isDisabled()) {
+            if (Classes.autoClass.autoRan) {
+                Classes.ledClass.setLEDHVA();
+            } else {
+                Classes.ledClass.setLEDDisable();
+            }
+        }
 
         // ALERTS //
         sendAlerts();

@@ -109,8 +109,8 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean autoAngleButton() {
-        return false; // hey dont press this its debug code :>
-        // return secondaryController.getAButton();
+        // return false; // hey dont press this its debug code :>
+        return secondaryController.getAButton();
     }
 
     @Override

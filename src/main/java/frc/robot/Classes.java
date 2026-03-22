@@ -12,7 +12,7 @@ import frc.robot.Shooter.Shooter;
 public class Classes {
     // Global classes
     public static Mecanum mecanumClass = new Mecanum();
-    // public static final LED ledClass = new LED();
+    public static final LED ledClass = new LED();
     public static final Shooter shooterClass = new Shooter();
     public static final Dashboard dashboardClass = new Dashboard();
     public static final DriverFeedback driverFeedbackClass = new DriverFeedback();

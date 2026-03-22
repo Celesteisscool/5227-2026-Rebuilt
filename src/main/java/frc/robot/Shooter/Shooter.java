@@ -1,6 +1,7 @@
 package frc.robot.Shooter;
 
 import java.util.List;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -110,10 +111,12 @@ public class Shooter {
         }
         // AUTO ANGLE AND SHOOT
         else if (Classes.Controls.autoAngleButton()) {
-            double speed = (double) Dashboard.getEntry("Debug Speed");
-            double angle = (double) Dashboard.getEntry("Debug Angle");
+            // double speed = (double) Dashboard.getEntry("Debug Speed");
+            // double angle = (double) Dashboard.getEntry("Debug Angle");
             
-            applyShooterState(new ShooterState(0, angle, speed));
+            // applyShooterState(new ShooterState(0, angle, speed));
+
+            applyShooterState(new ShooterState(2, -0.5, 0.4));
         } else if (Classes.Controls.zeroAngleButton()) {
             setAngle(10); // Jams us WAY down.
         } else if (Math.abs(Classes.Controls.getAngleAdjust()) > 0.1) {
@@ -137,17 +140,22 @@ public class Shooter {
 
     }
 
-    public void runShooter(double speed) {
+    public void runShooter(double wantedSpeed) {
 
         // clamp input to safe range [-1, 1]
-        speed = Math.max(-1.0, Math.min(1.0, speed));
-        desiredShooterSpeed = speed;
-        speed = speed * -1;
+        wantedSpeed = Math.max(-1.0, Math.min(1.0, wantedSpeed));
+        
+        // if ((desiredShooterSpeed - (shooterMotor.getEncoder().getVelocity() / 5676.0)) > 0.15) { // more than 15% away from our speed wanted
+        //     wantedSpeed = 1; // run at full power until we are CLOSE to being there
+        // } 
+        
+        desiredShooterSpeed = wantedSpeed;
+        wantedSpeed = wantedSpeed * -1;
 
         // set shooter motor to requested percent output
-        shooterMotor.set(speed);
+        shooterMotor.set(wantedSpeed);
 
-        if (shooterAtSpeed(speed)) {
+        if (shooterAtSpeed(wantedSpeed)) {
             shooting = true;
             // simple roller/kicker behavior: run them when shooting is requested
             double rollerSpeed = 0.75;
@@ -159,6 +167,8 @@ public class Shooter {
             intakeMotor.set(0);
             kickerMotor.set(0);
         }
+
+        shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676.0);
     }
 
     public void adjustAngle(double speed) { // used for limit switches.

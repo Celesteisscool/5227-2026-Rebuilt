@@ -4,6 +4,7 @@ import frc.robot.Controls.AutoControls;
 import frc.robot.Controls.ControlInterface;
 import frc.robot.Controls.OnePersonControls;
 import frc.robot.Controls.TwoPersonControls;
+import frc.robot.Shooter.Music;
 import frc.robot.Shooter.Shooter;
 
 /**
@@ -17,6 +18,8 @@ public class Classes {
     public static final Dashboard dashboardClass = new Dashboard();
     public static final DriverFeedback driverFeedbackClass = new DriverFeedback();
     public static final Auto autoClass = new Auto();
+
+    public static final Music musicClass = new Music();
 
     // Set up which interface we want to use
     

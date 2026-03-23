@@ -2,6 +2,7 @@ package frc.robot.Shooter;
 
 import java.util.List;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -15,7 +16,8 @@ public class Shooter {
     SparkMax kickerMotor = new SparkMax(11, MotorType.kBrushless);
 
     SparkMax angleMotor = new SparkMax(14, MotorType.kBrushless);
-    SparkMax shooterMotor = new SparkMax(13, MotorType.kBrushless);
+    // SparkMax shooterMotor = new SparkMax(13, MotorType.kBrushless);
+    TalonFX shooterMotor = new TalonFX(13);
 
     public double getShooterAngle() {
         return angleMotor.getEncoder().getPosition();
@@ -145,15 +147,17 @@ public class Shooter {
         // clamp input to safe range [-1, 1]
         wantedSpeed = Math.max(-1.0, Math.min(1.0, wantedSpeed));
         
-        // if ((desiredShooterSpeed - (shooterMotor.getEncoder().getVelocity() / 5676.0)) > 0.15) { // more than 15% away from our speed wanted
-        //     wantedSpeed = 1; // run at full power until we are CLOSE to being there
-        // } 
+        
         
         desiredShooterSpeed = wantedSpeed;
         wantedSpeed = wantedSpeed * -1;
 
         // set shooter motor to requested percent output
-        shooterMotor.set(wantedSpeed);
+        if (getShooterSpeed() <= (wantedSpeed - 0.15)) {
+            shooterMotor.set(1);
+        } else {
+            shooterMotor.set(wantedSpeed);
+        }
 
         if (shooterAtSpeed(wantedSpeed)) {
             shooting = true;
@@ -168,7 +172,6 @@ public class Shooter {
             kickerMotor.set(0);
         }
 
-        shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676.0);
     }
 
     public void adjustAngle(double speed) { // used for limit switches.
@@ -208,11 +211,14 @@ public class Shooter {
         
     }
 
+    private double getShooterSpeed() {
+        return (shooterMotor.getVelocity().getValueAsDouble() / 512);
+    }
+
     public boolean shooterAtSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its
                                                   // exactly equal
         double variance = 10.0; // 10% variance allowed
-        shooterSpeed = (shooterMotor.getEncoder().getVelocity() / 5676.0); // get current shooter speed as
-                                                                         // percentage of max RPM
+        shooterSpeed = getShooterSpeed(); 
         return (Math.abs(shooterSpeed - speed) <= (1.0 / variance));
     }
 }

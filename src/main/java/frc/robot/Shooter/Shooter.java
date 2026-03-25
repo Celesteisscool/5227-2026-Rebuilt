@@ -15,7 +15,8 @@ public class Shooter {
     SparkMax kickerMotor = new SparkMax(11, MotorType.kBrushless);
 
     TalonFX angleMotor = new TalonFX(14);
-    TalonFX shooterMotor = new TalonFX(13);
+    Flywheel flywheel = new Flywheel();
+    TalonFX shooterMotor = flywheel.shooterMotor; // only used to turn motor off
 
     SparkMax spindexMotor = new SparkMax(15, MotorType.kBrushless);
 
@@ -57,17 +58,6 @@ public class Shooter {
         return ShooterInterpolator.interpolate(OldShooterValues, distance);
     }
 
-    public void applyShooterState(ShooterState state) {
-        setAngle(state.hoodAngleDeg);
-        if (atAngle) {
-            runShooter(state.flywheelSpeed + (speedAdjust / 100.0));
-        } else {
-            intakeMotor.set(0);
-            kickerMotor.set(0);
-            shooterMotor.set(0);
-        }
-    }
-
     /** gets values from vision and dashboard, along side reseting variables */
     private void updateVariables() {
         distanceToHub = Vision.getDistanceToHub();
@@ -104,8 +94,32 @@ public class Shooter {
     }
 
     private void runShooter() {
-        applyShooterState(
-                interpolateBasedOnDistance(distanceToHub));
+        ShooterState wantedState = interpolateBasedOnDistance(distanceToHub);
+
+        setHoodAngle(wantedState.hoodAngleDeg);
+
+        double wantedOutputSpeed = (wantedState.desiredSpeed + (speedAdjust));
+
+        // Clamp input to safe range [-1, 1]
+        wantedOutputSpeed = Math.max(-1.0, Math.min(1.0, wantedOutputSpeed));
+
+        desiredShooterSpeed = wantedOutputSpeed;
+        flywheel.setMotorToRPM(wantedOutputSpeed);
+
+        if (flywheel.shooterAtSpeed(wantedOutputSpeed)) {
+            shooting = true;
+            double rollerSpeed = 0.75;
+            intakeMotor.set(rollerSpeed);
+            kickerMotor.set(-rollerSpeed);
+
+            spindexMotor.set(-globalSpindexSpeed);
+        } else {
+            shooting = false;
+            intakeMotor.set(0);
+            kickerMotor.set(0);
+            spindexMotor.set(0);
+        }
+
     }
 
     private void runShooterReversed() {
@@ -116,7 +130,7 @@ public class Shooter {
     }
 
     private void zeroAngleMotor() {
-        setAngle(10);
+        setHoodAngle(10);
     }
 
     private void turnAllMotorsOff() {
@@ -160,41 +174,13 @@ public class Shooter {
 
     public void runShooter(double wantedSpeed) {
 
-        // clamp input to safe range [-1, 1]
-        wantedSpeed = Math.max(-1.0, Math.min(1.0, wantedSpeed));
-
-        desiredShooterSpeed = wantedSpeed;
-        wantedSpeed = wantedSpeed * -1;
-
-        // set shooter motor to requested percent output
-        if (getShooterSpeed() <= (wantedSpeed - 0.15)) {
-            shooterMotor.set(1);
-        } else {
-            shooterMotor.set(wantedSpeed);
-        }
-
-        if (shooterAtSpeed(wantedSpeed)) {
-            shooting = true;
-            // simple roller/kicker behavior: run them when shooting is requested
-            double rollerSpeed = 0.75;
-            intakeMotor.set(rollerSpeed);
-            kickerMotor.set(-rollerSpeed);
-
-            spindexMotor.set(-globalSpindexSpeed); // Set our spindexer
-        } else { // Turn off roller/kicker if we're not at speed, prevents jamming and shooting
-                 // too early
-            shooting = false;
-            intakeMotor.set(0);
-            kickerMotor.set(0);
-        }
-
     }
 
     public void adjustAngle(double speed) { // used for limit switches.
         speed = Math.max(-1.0, Math.min(1.0, speed)); // clamp input to safe range [-1, 1]
 
-        double maxSpeed = 0.03;
-        speed = speed * maxSpeed; // Cap our speed at 0.03, done this way to give more control
+        double maxSpeed = 0.002;
+        speed = speed * maxSpeed;
 
         if (!angleSwitch.get() && (speed > 0)) { // if we are trying to move down and the switch is pressed, dont move
             angleMotor.set(0);
@@ -206,7 +192,7 @@ public class Shooter {
         }
     }
 
-    public void setAngle(double position) {
+    public void setHoodAngle(double position) {
         atAngle = false;
 
         desiredShooterAngle = position;

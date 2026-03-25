@@ -36,7 +36,7 @@ public class ShooterInterpolator {
         return new ShooterState(
             distanceMeters,
             MathUtil.interpolate(a.hoodAngleDeg, b.hoodAngleDeg, t),
-            MathUtil.interpolate(a.flywheelSpeed, b.flywheelSpeed, t));
+            MathUtil.interpolate(a.desiredSpeed, b.desiredSpeed, t));
       }
     }
 

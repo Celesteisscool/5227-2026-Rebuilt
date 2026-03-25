@@ -10,7 +10,7 @@ public class ShooterInterpolator {
    * Return interpolated shooter settings for the requested distance.
    * Expects table sorted ascending by distance. Clamps to first/last entries.
    */
-  public static ShooterState interpolate(
+  private static ShooterState interpolateList(
       List<ShooterState> table,
       double distanceMeters) {
 
@@ -44,4 +44,11 @@ public class ShooterInterpolator {
     // the last known state. This is a simple clamp instead of extrapolating.
     return table.get(table.size() - 1);
   }
+
+  public static ShooterState interpolateBasedOnDistance(double distance, List<ShooterState> distanceList) {
+        if (distance == Double.NaN) {
+            return new ShooterState(0, 0, 0); // default value if we dont see the hub, change this if you want
+        }
+        return interpolateList(distanceList, distance);
+    }
 }

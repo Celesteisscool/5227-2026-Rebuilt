@@ -16,59 +16,36 @@ public class Shooter {
 
     TalonFX angleMotor = new TalonFX(14);
     Flywheel flywheel = new Flywheel();
-    TalonFX shooterMotor = flywheel.shooterMotor; // only used to turn motor off
 
     SparkMax spindexMotor = new SparkMax(15, MotorType.kBrushless);
+
+    public ShooterStatus shooterStatus = new ShooterStatus();
 
     public double getShooterAngle() {
         return angleMotor.getPosition().getValueAsDouble();
     };
 
-    public boolean shooting = false; // whether we are currently trying to shoot
-    public boolean intaking = false; // whether we are currently trying to intake
-    public boolean outtaking = false; // whether we are currently trying to outtake
-    public boolean reverseShoot = false; // whether we are currently trying to reverse shoot
-    public boolean atAngle = false;
-
-    public boolean atSpeed = false; // whether we are at speed or not, used for driver feedback and other things
-    public double shooterSpeed = 0; // current shooter speed as percentage of max RPM
-
-    public double desiredShooterSpeed = 0; // the speed we want to be at, used for driver feedback and other things
-    public double desiredShooterAngle = 0; // the angle we want to be at, used for driver feedback and other things
-
-    public double speedAdjust = 0.0; // start at +0%
-
-    private double globalSpindexSpeed = 0.2; // im lazy :>
-
-    private Double distanceToHub = Double.NaN;
-
     DigitalInput angleSwitch = new DigitalInput(0);
 
-    public ShooterState interpolateBasedOnDistance(double distance) {
-        List<ShooterState> OldShooterValues = List.of(
-                new ShooterState(2, -0.5, 0.4),
-                new ShooterState(3, -1.75, 0.425),
-                new ShooterState(3.5, -1.8, 0.43),
-                new ShooterState(4, -2.3, 0.45),
-                new ShooterState(5, -3.25, 0.52),
-                new ShooterState(6, -3.25, 0.6));
-        if (distance == Double.NaN) {
-            return new ShooterState(0, 0, 0); // default value if we dont see the hub, change this if you want
-        }
-        return ShooterInterpolator.interpolate(OldShooterValues, distance);
-    }
+    List<ShooterState> OldShooterValues = List.of(
+            new ShooterState(2, -0.5, 0.4),
+            new ShooterState(3, -1.75, 0.425),
+            new ShooterState(3.5, -1.8, 0.43),
+            new ShooterState(4, -2.3, 0.45),
+            new ShooterState(5, -3.25, 0.52),
+            new ShooterState(6, -3.25, 0.6));
 
     /** gets values from vision and dashboard, along side reseting variables */
     private void updateVariables() {
-        distanceToHub = Vision.getDistanceToHub();
+        shooterStatus.distanceToHub = Vision.getDistanceToHub();
 
-        shooting = false;
-        intaking = false;
-        outtaking = false;
-        reverseShoot = false;
+        shooterStatus.shooting = false;
+        shooterStatus.intaking = false;
+        shooterStatus.outtaking = false;
+        shooterStatus.reverseShoot = false;
 
-        desiredShooterSpeed = 0.0;
-        desiredShooterAngle = 0.0;
+        shooterStatus.desiredShooterSpeed = 0.0;
+        shooterStatus.desiredShooterAngle = 0.0;
     }
 
     private void runIntake() {
@@ -77,44 +54,46 @@ public class Shooter {
 
         // Set rollers on a pulse
         Double pulsedSpeed = Math.round((Math.sin(systemTime) + 1) / 2) * rollerSpeed;
-        intaking = true;
+        shooterStatus.intaking = true;
         intakeMotor.set(pulsedSpeed);
         kickerMotor.set(pulsedSpeed);
 
-        spindexMotor.set(globalSpindexSpeed);
+        spindexMotor.set(shooterStatus.globalSpindexSpeed);
     }
 
     private void runOuttake() {
         Double rollerSpeed = -0.5;
-        outtaking = true;
+        shooterStatus.outtaking = true;
         intakeMotor.set(rollerSpeed);
         kickerMotor.set(rollerSpeed);
 
-        spindexMotor.set(-globalSpindexSpeed);
+        spindexMotor.set(-shooterStatus.globalSpindexSpeed);
     }
 
     private void runShooter() {
-        ShooterState wantedState = interpolateBasedOnDistance(distanceToHub);
+        ShooterState wantedState = ShooterInterpolator.interpolateBasedOnDistance(
+                shooterStatus.distanceToHub,
+                OldShooterValues);
 
         setHoodAngle(wantedState.hoodAngleDeg);
 
-        double wantedOutputSpeed = (wantedState.desiredSpeed + (speedAdjust));
+        double wantedOutputSpeed = (wantedState.desiredSpeed + (shooterStatus.speedAdjust));
 
         // Clamp input to safe range [-1, 1]
         wantedOutputSpeed = Math.max(-1.0, Math.min(1.0, wantedOutputSpeed));
 
-        desiredShooterSpeed = wantedOutputSpeed;
+        shooterStatus.desiredShooterSpeed = wantedOutputSpeed;
         flywheel.setMotorToRPM(wantedOutputSpeed);
 
         if (flywheel.shooterAtSpeed(wantedOutputSpeed)) {
-            shooting = true;
+            shooterStatus.shooting = true;
             double rollerSpeed = 0.75;
             intakeMotor.set(rollerSpeed);
             kickerMotor.set(-rollerSpeed);
 
-            spindexMotor.set(-globalSpindexSpeed);
+            spindexMotor.set(-shooterStatus.globalSpindexSpeed);
         } else {
-            shooting = false;
+            shooterStatus.shooting = false;
             intakeMotor.set(0);
             kickerMotor.set(0);
             spindexMotor.set(0);
@@ -123,7 +102,7 @@ public class Shooter {
     }
 
     private void runShooterReversed() {
-        reverseShoot = true;
+        shooterStatus.reverseShoot = true;
         Double rollerSpeed = -0.75;
         intakeMotor.set(rollerSpeed);
         kickerMotor.set(-rollerSpeed);
@@ -136,7 +115,7 @@ public class Shooter {
     private void turnAllMotorsOff() {
         intakeMotor.set(0);
         kickerMotor.set(0);
-        shooterMotor.set(0);
+        flywheel.shooterMotor.set(0);
         angleMotor.set(0);
         spindexMotor.set(0);
     }
@@ -144,10 +123,10 @@ public class Shooter {
     private void adjustSpeedManually() {
         double changeAmount = 2;
         if (Classes.Controls.speedAdjustUp()) {
-            speedAdjust += changeAmount;
+            shooterStatus.speedAdjust += changeAmount;
         }
         if (Classes.Controls.speedAdjustDown()) {
-            speedAdjust -= changeAmount;
+            shooterStatus.speedAdjust -= changeAmount;
         }
     }
 
@@ -168,11 +147,11 @@ public class Shooter {
             turnAllMotorsOff();
         }
 
+        if (Classes.Controls.debugButton()) {
+            flywheel.setMotorToRPM(10);
+        }
+
         adjustSpeedManually();
-
-    }
-
-    public void runShooter(double wantedSpeed) {
 
     }
 
@@ -193,13 +172,13 @@ public class Shooter {
     }
 
     public void setHoodAngle(double position) {
-        atAngle = false;
+        shooterStatus.atAngle = false;
 
-        desiredShooterAngle = position;
+        shooterStatus.desiredShooterAngle = position;
         double error = position - getShooterAngle();
         if (Math.abs(error) <= 0.075) { // if we are close enough to the target, stop moving
             adjustAngle(0);
-            atAngle = true;
+            shooterStatus.atAngle = true;
             return;
         }
 
@@ -211,16 +190,5 @@ public class Shooter {
             adjustAngle(0);
         }
 
-    }
-
-    private double getShooterSpeed() {
-        return (shooterMotor.getVelocity().getValueAsDouble() / 512);
-    }
-
-    public boolean shooterAtSpeed(double speed) { // checks if we are in a RANGE for our shooter, not just if its
-                                                  // exactly equal
-        double variance = 10.0; // 10% variance allowed
-        shooterSpeed = getShooterSpeed();
-        return (Math.abs(shooterSpeed - speed) <= (1.0 / variance));
     }
 }

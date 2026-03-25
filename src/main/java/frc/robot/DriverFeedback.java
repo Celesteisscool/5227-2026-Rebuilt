@@ -28,7 +28,7 @@ public class DriverFeedback {
     /** Sends alerts if needed */
     private static void sendAlerts() {
         // These are done in a way so that the alerts are sticky.
-        if (Classes.shooterClass.reverseShoot) { // Checks if we are "reversing" our shooter
+        if (Classes.shooterClass.shooterStatus.reverseShoot) { // Checks if we are "reversing" our shooter
             reverseAlert.set(true); // Show the alert
         }
 
@@ -108,21 +108,21 @@ public class DriverFeedback {
         Dashboard.updateEntry("Voltage", RobotController.getBatteryVoltage());
 
         // Shooter Info //
-        Dashboard.updateEntry("Shooter Speed", -Classes.shooterClass.shooterSpeed);
-        Dashboard.updateEntry("Desired Speed", Classes.shooterClass.desiredShooterSpeed);
+        Dashboard.updateEntry("Shooter Speed", -Classes.shooterClass.shooterStatus.shooterSpeed);
+        Dashboard.updateEntry("Desired Speed", Classes.shooterClass.shooterStatus.desiredShooterSpeed);
 
         Dashboard.updateEntry("Shooter Angle", Classes.shooterClass.getShooterAngle());
-        Dashboard.updateEntry("Desired Angle", Classes.shooterClass.desiredShooterAngle);
-        Dashboard.updateEntry("At Angle", Classes.shooterClass.atAngle);
+        Dashboard.updateEntry("Desired Angle", Classes.shooterClass.shooterStatus.desiredShooterAngle);
+        Dashboard.updateEntry("At Angle", Classes.shooterClass.shooterStatus.atAngle);
 
-        Dashboard.updateEntry("Intaking", Classes.shooterClass.intaking);
-        Dashboard.updateEntry("Outtaking", Classes.shooterClass.outtaking);
-        Dashboard.updateEntry("Shooting", Classes.shooterClass.shooting);
-        Dashboard.updateEntry("Reversing", Classes.shooterClass.reverseShoot);
+        Dashboard.updateEntry("Intaking",  Classes.shooterClass.shooterStatus.intaking);
+        Dashboard.updateEntry("Outtaking", Classes.shooterClass.shooterStatus.outtaking);
+        Dashboard.updateEntry("Shooting",  Classes.shooterClass.shooterStatus.shooting);
+        Dashboard.updateEntry("Reversing", Classes.shooterClass.shooterStatus.reverseShoot);
 
         Dashboard.updateEntry("Gyro", Classes.mecanumClass.gyro.getYaw().getValueAsDouble());
 
-        Dashboard.addEntry("Speed Adjust", Classes.shooterClass.speedAdjust);
+        Dashboard.addEntry("Speed Adjust", Classes.shooterClass.shooterStatus.speedAdjust);
 
         // RUMBLE FEEDBACK //
         if (closeToShift() && isHubActive()) { // if the hub is active, it is most likely going to be inactive
@@ -138,9 +138,9 @@ public class DriverFeedback {
 
         // LEDS //
         Classes.ledClass.setLEDOff();
-        if (Classes.shooterClass.shooting) {
+        if (Classes.shooterClass.shooterStatus.shooting) {
             Classes.ledClass.setLEDGreen();
-        } else if (Classes.shooterClass.atAngle) {
+        } else if (Classes.shooterClass.shooterStatus.atAngle) {
             Classes.ledClass.setLEDYellow();
         } else if (Classes.Controls.getShootButton()) {
             Classes.ledClass.setLEDRed();

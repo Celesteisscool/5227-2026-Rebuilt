@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Shooter.ShooterState;
 
 public class Auto {
     public boolean runningAuto = false;
@@ -107,13 +106,5 @@ public class Auto {
         }
         forceShoot = false;
 
-    }
-
-
-    private void autoShooterState(double time, ShooterState state) {
-        if (autoTimer.get() >= time) {
-            Classes.shooterClass.applyShooterState(state);
-            forceShoot = true;
-        }
     }
 }

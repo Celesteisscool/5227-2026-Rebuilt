@@ -37,11 +37,13 @@ public class Shooter {
 
     public double speedAdjust = 0.0; // start at +0%
 
-    private double spindexSpeed = 0.2; // im lazy :>
+    private double globalSpindexSpeed = 0.2; // im lazy :>
+
+    private Double distanceToHub = Double.NaN;
 
     DigitalInput angleSwitch = new DigitalInput(0);
 
-    public ShooterState getWantedShooterState(double distance) { // Returns the interpolated value
+    public ShooterState interpolateBasedOnDistance(double distance) {
         List<ShooterState> OldShooterValues = List.of(
                 new ShooterState(2, -0.5, 0.4),
                 new ShooterState(3, -1.75, 0.425),
@@ -66,9 +68,10 @@ public class Shooter {
         }
     }
 
-    public void shooterLoopLogic() {
+    /** gets values from vision and dashboard, along side reseting variables */
+    private void updateVariables() {
+        distanceToHub = Vision.getDistanceToHub();
 
-        Vision.getDistanceToHub();
         shooting = false;
         intaking = false;
         outtaking = false;
@@ -76,58 +79,55 @@ public class Shooter {
 
         desiredShooterSpeed = 0.0;
         desiredShooterAngle = 0.0;
-        // INTAKE
-        if (Classes.Controls.getIntakeButton()) {
-            Double speed = 0.6;
-            Double time = (System.currentTimeMillis() / 75.0);
+    }
 
-            // Set rollers on a pulse
-            Double smooth = Math.round((Math.sin(time) + 1) / 2) * -speed;
-            speed = 0.6 + smooth;
-            intaking = true;
-            intakeMotor.set(speed);
-            kickerMotor.set(speed);
+    private void runIntake() {
+        Double rollerSpeed = 0.6;
+        Double systemTime = (System.currentTimeMillis() / 75.0); // Divided to give us slower changes
 
-            // Spindex!!!!!!!
-            spindexMotor.set(spindexSpeed);
-        }
-        // OUTTAKE
-        else if (Classes.Controls.getOuttakeButton()) {
-            Double speed = -0.5;
-            outtaking = true;
-            intakeMotor.set(speed);
-            kickerMotor.set(speed);
-            spindexMotor.set(-spindexSpeed);
-        }
-        // SHOOT
-        else if (Classes.Controls.getShootButton()) {
-            applyShooterState(getWantedShooterState(Vision.getDistanceToHub()));
-        }
-        // REVERSE SHOOTER
-        else if (Classes.Controls.getReverseShootButton()) {
-            reverseShoot = true;
-            Double speed = -0.75;
-            intakeMotor.set(speed);
-            kickerMotor.set(-speed);
-        }
-        // AUTO ANGLE AND SHOOT
-        else if (Classes.Controls.debugButton()) {
+        // Set rollers on a pulse
+        Double pulsedSpeed = Math.round((Math.sin(systemTime) + 1) / 2) * rollerSpeed;
+        intaking = true;
+        intakeMotor.set(pulsedSpeed);
+        kickerMotor.set(pulsedSpeed);
 
-            shooterMotor.set(0.05);
+        spindexMotor.set(globalSpindexSpeed);
+    }
 
-        } else if (Classes.Controls.zeroAngleButton()) {
-            setAngle(10); // Jams us WAY down.
-        } else if (Math.abs(Classes.Controls.getAngleAdjust()) > 0.1) {
-            adjustAngle(Classes.Controls.getAngleAdjust());
-        }
-        // DEFAULT TO NOT MOVING
-        else {
-            intakeMotor.set(0);
-            kickerMotor.set(0);
-            shooterMotor.set(0);
-            angleMotor.set(0);
-        }
+    private void runOuttake() {
+        Double rollerSpeed = -0.5;
+        outtaking = true;
+        intakeMotor.set(rollerSpeed);
+        kickerMotor.set(rollerSpeed);
 
+        spindexMotor.set(-globalSpindexSpeed);
+    }
+
+    private void runShooter() {
+        applyShooterState(
+                interpolateBasedOnDistance(distanceToHub));
+    }
+
+    private void runShooterReversed() {
+        reverseShoot = true;
+        Double rollerSpeed = -0.75;
+        intakeMotor.set(rollerSpeed);
+        kickerMotor.set(-rollerSpeed);
+    }
+
+    private void zeroAngleMotor() {
+        setAngle(10);
+    }
+
+    private void turnAllMotorsOff() {
+        intakeMotor.set(0);
+        kickerMotor.set(0);
+        shooterMotor.set(0);
+        angleMotor.set(0);
+        spindexMotor.set(0);
+    }
+
+    private void adjustSpeedManually() {
         double changeAmount = 2;
         if (Classes.Controls.speedAdjustUp()) {
             speedAdjust += changeAmount;
@@ -135,6 +135,26 @@ public class Shooter {
         if (Classes.Controls.speedAdjustDown()) {
             speedAdjust -= changeAmount;
         }
+    }
+
+    public void shooterLoopLogic() {
+        updateVariables();
+
+        if (Classes.Controls.getIntakeButton()) {
+            runIntake();
+        } else if (Classes.Controls.getOuttakeButton()) {
+            runOuttake();
+        } else if (Classes.Controls.getShootButton()) {
+            runShooter();
+        } else if (Classes.Controls.getReverseShootButton()) {
+            runShooterReversed();
+        } else if (Classes.Controls.zeroAngleButton()) {
+            zeroAngleMotor();
+        } else {
+            turnAllMotorsOff();
+        }
+
+        adjustSpeedManually();
 
     }
 
@@ -160,7 +180,7 @@ public class Shooter {
             intakeMotor.set(rollerSpeed);
             kickerMotor.set(-rollerSpeed);
 
-            spindexMotor.set(-spindexSpeed); // Set our spindexer
+            spindexMotor.set(-globalSpindexSpeed); // Set our spindexer
         } else { // Turn off roller/kicker if we're not at speed, prevents jamming and shooting
                  // too early
             shooting = false;

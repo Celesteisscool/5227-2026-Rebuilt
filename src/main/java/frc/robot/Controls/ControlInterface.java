@@ -21,7 +21,7 @@ public interface ControlInterface {
 
     double getAngleAdjust(); // for adjusting the angle of the shooter
 
-    boolean autoAngleButton(); // for auto-adjusting the angle of the shooter using vision
+    boolean debugButton(); // for auto-adjusting the angle of the shooter using vision
     boolean zeroAngleButton(); // move our shooter too zero
 
     void rumble(double strength, boolean leftRumble); // for providing haptic feedback

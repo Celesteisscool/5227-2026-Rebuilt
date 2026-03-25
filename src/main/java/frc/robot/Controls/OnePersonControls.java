@@ -103,7 +103,7 @@ public class OnePersonControls implements ControlInterface {
     }
 
     @Override
-    public boolean autoAngleButton() {
+    public boolean debugButton() {
         return false; // Used for debuging
         // return secondaryController.getAButton();
     }

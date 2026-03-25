@@ -10,6 +10,7 @@ public class Music {
 
     public Music() {
         orchestra.addInstrument(Classes.shooterClass.shooterMotor);
+        orchestra.addInstrument(Classes.shooterClass.angleMotor);
         AudioConfigs config = new AudioConfigs();
         config.AllowMusicDurDisable = true;
         Classes.shooterClass.shooterMotor.getConfigurator().apply(config);

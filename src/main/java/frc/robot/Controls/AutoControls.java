@@ -74,7 +74,7 @@ public class AutoControls implements ControlInterface {
     }
 
     @Override
-    public boolean autoAngleButton() {
+    public boolean debugButton() {
         return false;
     }
 

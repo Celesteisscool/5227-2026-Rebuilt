@@ -85,6 +85,7 @@ public class TwoPersonControls implements ControlInterface {
     @Override
     public boolean getShootButton() {
         return (secondaryController.getRightTriggerAxis() > 0.5);
+        // return false; // turn us off for now :>
     }
 
     @Override

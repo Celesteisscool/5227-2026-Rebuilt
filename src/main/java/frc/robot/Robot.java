@@ -20,6 +20,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    Classes.musicClass.playBadApple();
+  }
+
+  @Override
+  public void testPeriodic() {
+    Classes.shooterClass.adjustAngle(0);
   }
 
   @Override

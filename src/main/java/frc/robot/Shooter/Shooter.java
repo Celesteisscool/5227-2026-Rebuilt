@@ -2,7 +2,10 @@ package frc.robot.Shooter;
 
 import java.util.List;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -15,9 +18,16 @@ public class Shooter {
     SparkMax kickerMotor = new SparkMax(11, MotorType.kBrushless);
 
     TalonFX angleMotor = new TalonFX(14);
+    TalonFXConfiguration angleConfig = new TalonFXConfiguration();
+
     Flywheel flywheel = new Flywheel();
 
     SparkMax spindexMotor = new SparkMax(15, MotorType.kBrushless);
+
+    public Shooter() {
+        angleConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        angleMotor.getConfigurator().apply(angleConfig);
+    }
 
     public ShooterStatus shooterStatus = new ShooterStatus();
 
@@ -34,6 +44,14 @@ public class Shooter {
             new ShooterState(4, -2.3, 0.45),
             new ShooterState(5, -3.25, 0.52),
             new ShooterState(6, -3.25, 0.6));
+
+    List<ShooterState> GuessedShooterValues = List.of(
+            new ShooterState(2, -0.16, 2270.4),
+            new ShooterState(3, -0.583, 2412.3),
+            new ShooterState(3.5, -0.6, 2440.68),
+            new ShooterState(4, -0.76767, 2554.2),
+            new ShooterState(5, -1.083, 2951.52),
+            new ShooterState(6, -1.083, 3405.6));
 
     /** gets values from vision and dashboard, along side reseting variables */
     private void updateVariables() {
@@ -138,6 +156,7 @@ public class Shooter {
         } else if (Classes.Controls.getOuttakeButton()) {
             runOuttake();
         } else if (Classes.Controls.getShootButton()) {
+            // flywheel.setMotorToRPM(4000);
             runShooter();
         } else if (Classes.Controls.getReverseShootButton()) {
             runShooterReversed();
@@ -146,9 +165,23 @@ public class Shooter {
         } else {
             turnAllMotorsOff();
         }
+        flywheel.getMotorRPM();
 
         if (Classes.Controls.debugButton()) {
-            flywheel.setMotorToRPM(10);
+            Double kickerSpeed = 0.6;
+
+            double targetRPM = 3000.0;
+            flywheel.setMotorToRPM(targetRPM);
+            if (flywheel.shooterAtSpeed(targetRPM)) {
+                intakeMotor.set(kickerSpeed);
+                kickerMotor.set(-kickerSpeed);
+                spindexMotor.set(-shooterStatus.globalSpindexSpeed);
+            } else {
+                intakeMotor.set(0);
+                kickerMotor.set(0);
+                spindexMotor.set(0);
+            }
+
         }
 
         adjustSpeedManually();
@@ -158,7 +191,7 @@ public class Shooter {
     public void adjustAngle(double speed) { // used for limit switches.
         speed = Math.max(-1.0, Math.min(1.0, speed)); // clamp input to safe range [-1, 1]
 
-        double maxSpeed = 0.002;
+        double maxSpeed = 0.015;
         speed = speed * maxSpeed;
 
         if (!angleSwitch.get() && (speed > 0)) { // if we are trying to move down and the switch is pressed, dont move

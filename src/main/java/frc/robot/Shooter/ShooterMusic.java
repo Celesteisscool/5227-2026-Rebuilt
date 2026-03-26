@@ -8,17 +8,18 @@ public class ShooterMusic {
 
     public ShooterMusic() {
         orchestra.addInstrument(Classes.shooterClass.flywheel.shooterMotor);
-        orchestra.addInstrument(Classes.shooterClass.angleMotor);
+        // orchestra.addInstrument(Classes.shooterClass.angleMotor);
+        
         AudioConfigs config = new AudioConfigs();
         config.AllowMusicDurDisable = true;
         Classes.shooterClass.flywheel.shooterMotor.getConfigurator().apply(config);
-        Classes.shooterClass.angleMotor.getConfigurator().apply(config);
+        // Classes.shooterClass.angleMotor.getConfigurator().apply(config);
     }
     private void loadMusic(String name) {
         orchestra.loadMusic(name + ".chrp");
     }
-    public void playStartup() {
-        loadMusic("startup");
+    public void playBadApple() {
+        loadMusic("badApple");
         orchestra.play();
     }
 }

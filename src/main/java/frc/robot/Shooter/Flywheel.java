@@ -5,6 +5,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import frc.robot.Classes;
+
 /**
  * Provides control for the flywheel motor. Used so that we can have a pid
  * controller, while still keeping the code relativly simple.
@@ -27,17 +29,23 @@ public class Flywheel {
         shooterMotor.getConfigurator().apply(shooterConfig);
     }
 
+
     public void setMotorToRPM(double targetRPM) {
+        Classes.shooterClass.shooterStatus.desiredShooterSpeed = targetRPM;
         double targetRPS = targetRPM / 60.0;
-        shooterMotor.setControl(velocityRequest.withVelocity(targetRPS));
+        shooterMotor.setControl(velocityRequest.withVelocity(-targetRPS));
     }
 
+
     public double getMotorRPM() {
-        double shooterRPM = shooterMotor.getVelocity().getValueAsDouble();
-        return shooterRPM / 60.0;
+        double shooterRPS = shooterMotor.getVelocity().getValueAsDouble();
+        double shooterRPM = shooterRPS * 60.0;
+        Classes.shooterClass.shooterStatus.shooterSpeed = shooterRPM;
+        return shooterRPM;
     }
 
     public boolean shooterAtSpeed(double desiredRPM) {
-        return Math.abs(getMotorRPM() - desiredRPM) < 50.0;
+        System.out.println(getMotorRPM());
+        return Math.abs(desiredRPM - (-getMotorRPM())) < 200.0;
     }
 }

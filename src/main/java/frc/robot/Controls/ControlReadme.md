@@ -4,9 +4,9 @@
 - [Examples](#examples)
 
 ## Introduction
- Hello Team Eagle Elite 5227! I am here to showcase my invention in Controls. This "project" is made for the purpose of potentially getting the "Innovation in Control" award. This is primarily a developer document, but should be easy enough for others to understand. 
+ Hello Everyone! I am here to showcase my control system. This is primarily a developer document, but should be easy enough for others to understand. 
  
- The Control Interface is the idea that there is a separation between Controls and Robot. Instead of putting your references to Controls directly in the Robot code, you have a wrapper that provides the Robot code with your Controls.
+ The "Control Interface" is the idea that there is a separation between "Controls" and "Robot" code. Instead of putting your references to Controls directly in the Robot code, you have a wrapper that provides the Robot code with your Controls.
 
  The control Interface is composed of two parts: The "Header" File and the "Controls" File(s). The "Header" file defines all the inputs that will be avaliable to bind, while the "Controls"
   file defines what gets returned by those inputs.
@@ -24,9 +24,9 @@ Your functions should specify a name and a variable type. In your robot code, th
 Your "Controls" should be comprised of overrides, overriding the template functions. 
 ```java
 @Override
-    public double inputDouble() {
-        return 0.0;
-    } 
+public double inputDouble() {
+    return 0.0;
+} 
 ```
 This is where you could input stuff like joystick buttons. The "Controls" file should also include any functions needed to properly use an input! (For example, clamping a input to be in a range)
 
@@ -52,3 +52,4 @@ public boolean getSuperFunButton() {
     return GetDynamicControl().getSuperFunButton();
 }
 ```
+

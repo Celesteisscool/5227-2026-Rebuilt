@@ -18,8 +18,13 @@ public class ShooterMusic {
     private void loadMusic(String name) {
         orchestra.loadMusic(name + ".chrp");
     }
-    public void playBadApple() {
-        loadMusic("badApple");
+
+    /** Music list:
+     * badApple
+     * megalovania
+     */
+    public void playMusic(String name) {
+        loadMusic(name);
         orchestra.play();
     }
 }

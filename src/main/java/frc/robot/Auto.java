@@ -24,6 +24,14 @@ public class Auto {
         autoTimer.start();
         autoRan = true;
 
+        playMusicOnNothing();
+
+    }
+
+    private void playMusicOnNothing() {
+        if (selectedAuto == "Nothing") {
+            Classes.musicClass.playMusic("badApple");
+        }
     }
 
     public void runAuto() {

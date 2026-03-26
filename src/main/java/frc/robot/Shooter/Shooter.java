@@ -1,6 +1,7 @@
 package frc.robot.Shooter;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -57,7 +58,6 @@ public class Shooter {
     private void updateVariables() {
         shooterStatus.distanceToHub = Vision.getDistanceToHub();
 
-        shooterStatus.shooting = false;
         shooterStatus.intaking = false;
         shooterStatus.outtaking = false;
         shooterStatus.reverseShoot = false;
@@ -88,23 +88,43 @@ public class Shooter {
         spindexMotor.set(-shooterStatus.globalSpindexSpeed);
     }
 
+    /** Runs the shooter using vision data */
     private void runShooter() {
-        ShooterState wantedState = ShooterInterpolator.interpolateBasedOnDistance(
-                shooterStatus.distanceToHub,
-                OldShooterValues);
+        runShooter(Double.NaN);
+    }
 
-        setHoodAngle(wantedState.hoodAngleDeg);
+    /**
+     * Runs the shooter, using a provided speed.
+     * this function only runs with a input, so there is a runShooter() that passes
+     * in NaN if there is no input
+     */
+    private void runShooter(double shooterSpeed) {
+        double wantedOutputSpeed;
+        if (shooterSpeed != Double.NaN) {
+            // Use explicit provided speed when present
+            wantedOutputSpeed = shooterSpeed;
+        } else {
+            // Otherwise compute based on distance
+            ShooterState wantedState = ShooterInterpolator.interpolateBasedOnDistance(
+                    shooterStatus.distanceToHub,
+                    OldShooterValues);
 
-        double wantedOutputSpeed = (wantedState.desiredSpeed + (shooterStatus.speedAdjust));
+            setHoodAngle(wantedState.hoodAngleDeg);
 
-        // Clamp input to safe range [-1, 1]
-        wantedOutputSpeed = Math.max(-1.0, Math.min(1.0, wantedOutputSpeed));
+            wantedOutputSpeed = (wantedState.desiredSpeed + (shooterStatus.speedAdjust));
+
+            // Clamp input to safe range [-1, 1]
+            wantedOutputSpeed = Math.max(-1.0, Math.min(1.0, wantedOutputSpeed));
+        }
 
         shooterStatus.desiredShooterSpeed = wantedOutputSpeed;
         flywheel.setMotorToRPM(wantedOutputSpeed);
 
         if (flywheel.shooterAtSpeed(wantedOutputSpeed)) {
             shooterStatus.shooting = true;
+        }
+
+        if (shooterStatus.shooting) {
             double rollerSpeed = 0.75;
             intakeMotor.set(rollerSpeed);
             kickerMotor.set(-rollerSpeed);
@@ -139,7 +159,7 @@ public class Shooter {
     }
 
     private void adjustSpeedManually() {
-        double changeAmount = 2;
+        double changeAmount = 100; // 100 RPM
         if (Classes.Controls.speedAdjustUp()) {
             shooterStatus.speedAdjust += changeAmount;
         }
@@ -156,33 +176,18 @@ public class Shooter {
         } else if (Classes.Controls.getOuttakeButton()) {
             runOuttake();
         } else if (Classes.Controls.getShootButton()) {
-            // flywheel.setMotorToRPM(4000);
             runShooter();
         } else if (Classes.Controls.getReverseShootButton()) {
             runShooterReversed();
         } else if (Classes.Controls.zeroAngleButton()) {
             zeroAngleMotor();
+        } else if (Classes.Controls.debugButton()) {
+            runShooter(2000);
         } else {
+            shooterStatus.shooting = false;
             turnAllMotorsOff();
         }
-        flywheel.getMotorRPM();
-
-        if (Classes.Controls.debugButton()) {
-            Double kickerSpeed = 0.6;
-
-            double targetRPM = 3000.0;
-            flywheel.setMotorToRPM(targetRPM);
-            if (flywheel.shooterAtSpeed(targetRPM)) {
-                intakeMotor.set(kickerSpeed);
-                kickerMotor.set(-kickerSpeed);
-                spindexMotor.set(-shooterStatus.globalSpindexSpeed);
-            } else {
-                intakeMotor.set(0);
-                kickerMotor.set(0);
-                spindexMotor.set(0);
-            }
-
-        }
+        flywheel.getMotorRPM(); // Update shooter speed
 
         adjustSpeedManually();
 
@@ -197,7 +202,7 @@ public class Shooter {
         if (!angleSwitch.get() && (speed > 0)) { // if we are trying to move down and the switch is pressed, dont move
             angleMotor.set(0);
             angleMotor.setPosition(0);
-        } else if (getShooterAngle() < -5.2 && (speed < 0)) {
+        } else if (getShooterAngle() <= -2.6 && (speed < 0)) {
             angleMotor.set(0);
         } else {
             angleMotor.set(speed);

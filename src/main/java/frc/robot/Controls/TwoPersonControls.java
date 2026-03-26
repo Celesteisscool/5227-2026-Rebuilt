@@ -136,7 +136,6 @@ public class TwoPersonControls implements ControlInterface {
         return (driverController.getButtonCount() > 0 && secondaryController.getButtonCount() > 0);
     }
 
-    int previousDPAD = -1;
 
     @Override
     public boolean speedAdjustUp() {

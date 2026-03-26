@@ -20,18 +20,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    Classes.musicClass.playBadApple();
   }
 
   @Override
   public void testPeriodic() {
-    Classes.shooterClass.adjustAngle(0);
+    Classes.shooterClass.adjustAngle(0); // brake mode maybe???
   }
 
   @Override
   public void autonomousInit() {
     Classes.autoClass.chooseAuto(); // Use auto controls + setup selected auto
-
   }
 
   @Override

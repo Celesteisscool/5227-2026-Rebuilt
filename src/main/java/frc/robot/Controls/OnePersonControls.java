@@ -7,7 +7,6 @@ import frc.robot.Vision;
 public class OnePersonControls implements ControlInterface {
 
     XboxController driverController = new XboxController(0);
-    // XboxController secondaryController = new XboxController(1);
 
     Timer gyroResetTimer = new Timer(); // Timer for reseting gyro
 
@@ -15,12 +14,17 @@ public class OnePersonControls implements ControlInterface {
 
     // Use floating-point literals so these are not truncated to zero by integer
     // division
-    double forwardSlowdown = 1.0 / 4.0; // 0.25
-    double sidewaysSlowdown = 1.0 / 2.0; // 0.5
-    double rotationSlowdown = 1.0 / 3.0; // ~0.333...
+    double forwardSlowdown = 1.0 / 3.0;
+    double sidewaysSlowdown = 1.0 / 2.0;
+    double rotationSlowdown = 1.0 / 3.0;
+    private double deadzone(double input) {
+        if (Math.abs(input) < 0.1) { input = 0; }
+        return input;
+    }
 
     @Override
     public double getDriveX() {
+
         return -(driverController.getLeftY() * forwardSlowdown);
     }
 
@@ -35,7 +39,7 @@ public class OnePersonControls implements ControlInterface {
         if (autoAlignButton()) {
             return visionRotate;
         } else {
-            return (driverController.getRightX() * rotationSlowdown);
+            return (deadzone(driverController.getRightX()) * rotationSlowdown);
         }
     }
 
@@ -47,17 +51,17 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getBreakMode() {
-        return (driverController.getRightBumperButton());
+        return (driverController.getRightY() > 0.8);
     }
 
     @Override
     public boolean resetGyro() {
-        if (driverController.getBackButtonPressed()) {
+        if (driverController.getStartButtonPressed()) {
             gyroResetTimer.reset();
             gyroResetTimer.start();
 
         }
-        if (driverController.getBackButtonReleased()) {
+        if (driverController.getStartButtonReleased()) {
             gyroResetTimer.stop();
         }
 
@@ -72,7 +76,7 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean autoAlignButton() {
-        return driverController.getAButton();
+        return (driverController.getRightY() < -0.8); // pushing stick up
     }
 
     // SHOOTER CONTROLS
@@ -80,6 +84,7 @@ public class OnePersonControls implements ControlInterface {
     @Override
     public boolean getShootButton() {
         return (driverController.getRightTriggerAxis() > 0.5);
+        // return false; // turn us off for now :>
     }
 
     @Override
@@ -89,7 +94,7 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getReverseShootButton() {
-        return driverController.getStartButton();
+        return driverController.getBackButton();
     }
 
     @Override
@@ -99,13 +104,13 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public double getAngleAdjust() {
-        return 0.0; // return (secondaryController.getLeftY());
+        return 0.0;
     }
 
     @Override
     public boolean debugButton() {
-        return false; // Used for debuging
-        // return secondaryController.getAButton();
+        // return false; // hey dont press this its debug code :>
+        return driverController.getAButton();
     }
 
     @Override
@@ -128,21 +133,14 @@ public class OnePersonControls implements ControlInterface {
         return (driverController.getButtonCount() > 0);
     }
 
-    int previousDPAD = -1;
 
     @Override
     public boolean speedAdjustUp() {
-        boolean output = ((driverController.getPOV() == 0) && (previousDPAD != 0));
-        previousDPAD = driverController.getPOV();
-        return output;
+        return driverController.getRightBumperButtonPressed();
     }
 
     @Override
     public boolean speedAdjustDown() {
-        boolean output = ((driverController.getPOV() == 180) && (previousDPAD != 180));
-        previousDPAD = driverController.getPOV();
-        return output;
-
+        return driverController.getLeftBumperButtonPressed();
     }
-
 }

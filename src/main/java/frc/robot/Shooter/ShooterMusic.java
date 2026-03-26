@@ -8,7 +8,7 @@ public class ShooterMusic {
 
     public ShooterMusic() {
         orchestra.addInstrument(Classes.shooterClass.flywheel.shooterMotor);
-        // orchestra.addInstrument(Classes.shooterClass.angleMotor);
+        orchestra.addInstrument(Classes.shooterClass.angleMotor);
         
         AudioConfigs config = new AudioConfigs();
         config.AllowMusicDurDisable = true;

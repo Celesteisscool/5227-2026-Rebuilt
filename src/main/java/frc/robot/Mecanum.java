@@ -87,7 +87,8 @@ public class Mecanum {
 		odometry.getPoseMeters();
 
 		if (Classes.Controls.resetGyro()) {
-			gyro.setYaw(180); // Resets in a way where the intake is facing the drivers
+			gyro.reset();
+			// gyro.setYaw(180); // Resets in a way where the intake is facing the drivers
 		}
 
 		setBrakeMode(Classes.Controls.getBreakMode());

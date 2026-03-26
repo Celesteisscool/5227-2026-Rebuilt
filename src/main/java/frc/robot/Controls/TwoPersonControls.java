@@ -18,8 +18,11 @@ public class TwoPersonControls implements ControlInterface {
     double forwardSlowdown = 1.0 / 3.0;
     double sidewaysSlowdown = 1.0 / 2.0;
     double rotationSlowdown = 1.0 / 3.0;
+
     private double deadzone(double input) {
-        if (Math.abs(input) < 0.1) { input = 0; }
+        if (Math.abs(input) < 0.1) {
+            input = 0;
+        }
         return input;
     }
 
@@ -57,12 +60,12 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean resetGyro() {
-        if (driverController.getStartButtonPressed()) {
+        if (driverController.getBackButtonPressed()) {
             gyroResetTimer.reset();
             gyroResetTimer.start();
 
         }
-        if (driverController.getStartButtonReleased()) {
+        if (driverController.getBackButtonReleased()) {
             gyroResetTimer.stop();
         }
 
@@ -84,39 +87,38 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public boolean getShootButton() {
-        return (secondaryController.getRightTriggerAxis() > 0.5);
-        // return false; // turn us off for now :>
+        return secondaryController.getRightTriggerAxis() > 0.5;
     }
 
     @Override
     public boolean getIntakeButton() {
-        return (secondaryController.getLeftTriggerAxis() > 0.5);
+        return secondaryController.getLeftTriggerAxis() > 0.5;
     }
 
     @Override
     public boolean getReverseShootButton() {
-        return secondaryController.getStartButton();
+        return secondaryController.getStartButton() || driverController.getStartButton();
     }
 
     @Override
     public boolean getOuttakeButton() {
-        return secondaryController.getBButton();
+        return secondaryController.getAButton();
     }
 
     @Override
     public double getAngleAdjust() {
-        return (secondaryController.getLeftY());
+        return 0.0;
     }
 
     @Override
     public boolean debugButton() {
         // return false; // hey dont press this its debug code :>
-        return secondaryController.getAButton();
+        return secondaryController.getYButton();
     }
 
     @Override
     public boolean zeroAngleButton() {
-        return secondaryController.getXButton();
+        return secondaryController.getBButton();
     }
 
     // Helper Functions
@@ -135,7 +137,6 @@ public class TwoPersonControls implements ControlInterface {
     public boolean allControlersConnected() {
         return (driverController.getButtonCount() > 0 && secondaryController.getButtonCount() > 0);
     }
-
 
     @Override
     public boolean speedAdjustUp() {

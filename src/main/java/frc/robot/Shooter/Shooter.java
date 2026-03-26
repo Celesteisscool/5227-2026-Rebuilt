@@ -182,7 +182,8 @@ public class Shooter {
         } else if (Classes.Controls.zeroAngleButton()) {
             zeroAngleMotor();
         } else if (Classes.Controls.debugButton()) {
-            runShooter(2000);
+            runShooter(1750);
+            // spindexMotor.set(0.2);
         } else {
             shooterStatus.shooting = false;
             turnAllMotorsOff();

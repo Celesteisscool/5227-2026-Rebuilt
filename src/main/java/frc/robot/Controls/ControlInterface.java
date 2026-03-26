@@ -29,4 +29,5 @@ public interface ControlInterface {
 
     boolean speedAdjustUp();
     boolean speedAdjustDown();
+
 }

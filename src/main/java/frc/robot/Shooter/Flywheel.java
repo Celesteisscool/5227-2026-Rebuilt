@@ -45,7 +45,6 @@ public class Flywheel {
     }
 
     public boolean shooterAtSpeed(double desiredRPM) {
-        System.out.println(getMotorRPM());
         return Math.abs(desiredRPM - (-getMotorRPM())) < 200.0;
     }
 

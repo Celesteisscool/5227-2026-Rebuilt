@@ -16,7 +16,7 @@ public class TwoPersonControls implements ControlInterface {
     // Use floating-point literals so these are not truncated to zero by integer
     // division
     double forwardSlowdown = 1.0 / 3.0;
-    double sidewaysSlowdown = 1.0 / 2.0;
+    double sidewaysSlowdown = 3.0 / 4.0;
     double rotationSlowdown = 1.0 / 3.0;
 
     private double deadzone(double input) {

@@ -15,8 +15,8 @@ public class TwoPersonControls implements ControlInterface {
 
     // Use floating-point literals so these are not truncated to zero by integer
     // division
-    double forwardSlowdown = 1.0 / 3.0;
-    double sidewaysSlowdown = 3.0 / 4.0;
+    double forwardSlowdown = 1.0 / 4.0;
+    double sidewaysSlowdown = 1.0 / 4.0;
     double rotationSlowdown = 1.0 / 3.0;
 
     private double deadzone(double input) {
@@ -42,6 +42,8 @@ public class TwoPersonControls implements ControlInterface {
         double visionRotate = Vision.getAutoAlignRotation();
         if (autoAlignButton()) {
             return visionRotate;
+        } else if (getBreakMode()) {
+            return 0.0;
         } else {
             return (deadzone(driverController.getRightX()) * rotationSlowdown);
         }

@@ -1,9 +1,7 @@
 package frc.robot.Shooter;
 
 import java.util.List;
-import java.util.Optional;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -12,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Classes;
+import frc.robot.Dashboard;
 import frc.robot.Vision;
 
 public class Shooter {
@@ -46,13 +45,13 @@ public class Shooter {
             new ShooterState(5, -3.25, 0.52),
             new ShooterState(6, -3.25, 0.6));
 
-    List<ShooterState> GuessedShooterValues = List.of(
-            new ShooterState(2, -0.16, 2270.4),
-            new ShooterState(3, -0.583, 2412.3),
-            new ShooterState(3.5, -0.6, 2440.68),
-            new ShooterState(4, -0.76767, 2554.2),
-            new ShooterState(5, -1.083, 2951.52),
-            new ShooterState(6, -1.083, 3405.6));
+    List<ShooterState> GoodShooterValues = List.of(
+            new ShooterState(2, -0.16, 2600.0),
+            new ShooterState(3, -0.53, 3000),
+            new ShooterState(3.5, -0.6, 3250),
+            new ShooterState(4, -0.7, 3500),
+            new ShooterState(5, -1, 3750),
+            new ShooterState(6, -1.1, 4100));
 
     /** gets values from vision and dashboard, along side reseting variables */
     private void updateVariables() {
@@ -88,39 +87,23 @@ public class Shooter {
         spindexMotor.set(-shooterStatus.globalSpindexSpeed);
     }
 
-    /** Runs the shooter using vision data */
     private void runShooter() {
-        runShooter(Double.NaN);
-    }
-
-    /**
-     * Runs the shooter, using a provided speed.
-     * this function only runs with a input, so there is a runShooter() that passes
-     * in NaN if there is no input
-     */
-    private void runShooter(double shooterSpeed) {
         double wantedOutputSpeed;
-        if (shooterSpeed != Double.NaN) {
-            // Use explicit provided speed when present
-            wantedOutputSpeed = shooterSpeed;
-        } else {
-            // Otherwise compute based on distance
-            ShooterState wantedState = ShooterInterpolator.interpolateBasedOnDistance(
-                    shooterStatus.distanceToHub,
-                    OldShooterValues);
+        ShooterState wantedState;
 
-            setHoodAngle(wantedState.hoodAngleDeg);
+        // Otherwise compute based on distance
+        wantedState = ShooterInterpolator.interpolateBasedOnDistance(
+                shooterStatus.distanceToHub,
+                GoodShooterValues);
 
-            wantedOutputSpeed = (wantedState.desiredSpeed + (shooterStatus.speedAdjust));
+        setHoodAngle(wantedState.hoodAngleDeg);
 
-            // Clamp input to safe range [-1, 1]
-            wantedOutputSpeed = Math.max(-1.0, Math.min(1.0, wantedOutputSpeed));
-        }
+        wantedOutputSpeed = (wantedState.desiredSpeed + (shooterStatus.speedAdjust));
 
         shooterStatus.desiredShooterSpeed = wantedOutputSpeed;
         flywheel.setMotorToRPM(wantedOutputSpeed);
 
-        if (flywheel.shooterAtSpeed(wantedOutputSpeed)) {
+        if (flywheel.shooterAtSpeed(wantedOutputSpeed) && shooterStatus.atAngle) {
             shooterStatus.shooting = true;
         }
 
@@ -181,9 +164,6 @@ public class Shooter {
             runShooterReversed();
         } else if (Classes.Controls.zeroAngleButton()) {
             zeroAngleMotor();
-        } else if (Classes.Controls.debugButton()) {
-            runShooter(1750);
-            // spindexMotor.set(0.2);
         } else {
             shooterStatus.shooting = false;
             turnAllMotorsOff();
@@ -195,15 +175,13 @@ public class Shooter {
     }
 
     public void adjustAngle(double speed) { // used for limit switches.
-        speed = Math.max(-1.0, Math.min(1.0, speed)); // clamp input to safe range [-1, 1]
-
-        double maxSpeed = 0.015;
-        speed = speed * maxSpeed;
+        double maxSpeed = 0.03;
+        speed = Math.max(-maxSpeed, Math.min(maxSpeed, speed)); // clamp input to max speed range
 
         if (!angleSwitch.get() && (speed > 0)) { // if we are trying to move down and the switch is pressed, dont move
             angleMotor.set(0);
             angleMotor.setPosition(0);
-        } else if (getShooterAngle() <= -2.6 && (speed < 0)) {
+        } else if (getShooterAngle() <= -1.5 && (speed < 0)) {
             angleMotor.set(0);
         } else {
             angleMotor.set(speed);
@@ -216,7 +194,7 @@ public class Shooter {
         shooterStatus.desiredShooterAngle = position;
         double error = position - getShooterAngle();
         if (Math.abs(error) <= 0.075) { // if we are close enough to the target, stop moving
-            adjustAngle(0);
+            adjustAngle(-0.01);
             shooterStatus.atAngle = true;
             return;
         }

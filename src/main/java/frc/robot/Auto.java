@@ -23,15 +23,6 @@ public class Auto {
         autoTimer.reset();
         autoTimer.start();
         autoRan = true;
-
-        playMusicOnNothing();
-
-    }
-
-    private void playMusicOnNothing() {
-        if (selectedAuto == "Nothing") {
-            Classes.musicClass.playMusic("badApple");
-        }
     }
 
     public void runAuto() {
@@ -60,18 +51,6 @@ public class Auto {
 
         // Stop shooting
         autoState(8, 0, 0, 0, false, false, false, false);
-
-        // Ram into hub
-        autoState(9, 0.7, 0, 0, false, false, false, false);
-
-        // Go back to shoot
-        autoState(10, -0.5, 0, 0, false, false, false, false);
-
-        // chill
-        autoState(11, 0, 0, 0, true, false, false, false);
-
-        // shoot ts
-        autoState(12, 0.0, 0.0, 0.0, false, true, false, false);
     }
 
     private void backupAuto() {

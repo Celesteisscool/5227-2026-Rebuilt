@@ -28,7 +28,6 @@ public class TwoPersonControls implements ControlInterface {
 
     @Override
     public double getDriveX() {
-        if 
         return -(driverController.getLeftY() * forwardSlowdown * getSpeed());
     }
 
@@ -152,7 +151,7 @@ public class TwoPersonControls implements ControlInterface {
 
     private double getSpeed() {
         double speed = 1;
-        if driverController.getRightBumperButton() {
+        if (driverController.getLeftBumperButton() || driverController.getRightBumperButton()) {
             speed = 1.5;
         }
         return speed;

@@ -44,10 +44,10 @@ public class Auto {
         autoState(0, -0.5, 0, 0, false, false, false, true);
 
         // Stop moving and coast
-        autoState(1, 0, 0, 0, false, false, false, true);
+        autoState(1.5, 0, 0, 0, false, false, false, true);
 
         // Shoot our balls
-        autoState(2, 0, 0, 0, false, true, false, false);
+        autoState(2.5, 0, 0, 0, false, true, false, false);
 
         // Stop shooting
         autoState(8, 0, 0, 0, false, false, false, false);

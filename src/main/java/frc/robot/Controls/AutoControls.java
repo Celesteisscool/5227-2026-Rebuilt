@@ -104,4 +104,14 @@ public class AutoControls implements ControlInterface {
         return false;
     }
 
+    @Override
+    public boolean demoJuggle() {
+        return false;
+    }
+
+    @Override
+    public boolean demoShoot() {
+        return false;
+    }
+
 }

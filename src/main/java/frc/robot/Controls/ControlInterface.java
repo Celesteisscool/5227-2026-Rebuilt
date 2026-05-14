@@ -30,4 +30,8 @@ public interface ControlInterface {
     boolean speedAdjustUp();
     boolean speedAdjustDown();
 
+    // These were added off season, used for showing off what the robot is capable of without breaking anything.
+    boolean demoJuggle();
+    boolean demoShoot();
+
 }

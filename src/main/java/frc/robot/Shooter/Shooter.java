@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Classes;
-import frc.robot.Dashboard;
 import frc.robot.Vision;
 
 public class Shooter {
@@ -88,13 +87,16 @@ public class Shooter {
     }
 
     private void runShooter() {
-        double wantedOutputSpeed;
         ShooterState wantedState;
-
-        // Otherwise compute based on distance
+        // Compute based on distance
         wantedState = ShooterInterpolator.interpolateBasedOnDistance(
                 shooterStatus.distanceToHub,
                 GoodShooterValues);
+        runShooter(wantedState);
+    }
+
+    private void runShooter(ShooterState wantedState) {
+        double wantedOutputSpeed;
 
         setHoodAngle(wantedState.hoodAngleDeg);
 
@@ -164,7 +166,13 @@ public class Shooter {
             runShooterReversed();
         } else if (Classes.Controls.zeroAngleButton()) {
             zeroAngleMotor();
-        } else {
+        }  else if (Classes.Controls.demoJuggle()) {
+            runShooter(new ShooterState(0, 0, 1000));
+        } else if (Classes.Controls.demoShoot()) {
+            runShooter(new ShooterState(0, -1.1, 2500));
+        } 
+        
+        else {
             shooterStatus.shooting = false;
             turnAllMotorsOff();
         }

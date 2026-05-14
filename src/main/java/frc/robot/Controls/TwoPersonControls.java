@@ -149,6 +149,16 @@ public class TwoPersonControls implements ControlInterface {
         return secondaryController.getLeftBumperButtonPressed();
     }
 
+    @Override
+    public boolean demoJuggle() {
+        return secondaryController.getLeftBumperButton();
+    }
+
+    @Override
+    public boolean demoShoot() {
+        return secondaryController.getRightBumperButton();
+    }
+
     private double getSpeed() {
         double speed = 1;
         if (driverController.getLeftBumperButton() || driverController.getRightBumperButton()) {
@@ -156,4 +166,6 @@ public class TwoPersonControls implements ControlInterface {
         }
         return speed;
     }
+
+
 }

@@ -45,8 +45,7 @@ public class OnePersonControls implements ControlInterface {
 
     @Override
     public boolean getSlowMode() {
-        boolean slowMode = (driverController.getLeftBumperButton());
-        return slowMode;
+        return false;
     }
 
     @Override
@@ -142,5 +141,15 @@ public class OnePersonControls implements ControlInterface {
     @Override
     public boolean speedAdjustDown() {
         return driverController.getLeftBumperButtonPressed();
+    }
+
+    @Override
+    public boolean demoJuggle() {
+        return driverController.getLeftBumperButton();
+    }
+
+    @Override
+    public boolean demoShoot() {
+        return driverController.getRightBumperButton();
     }
 }
